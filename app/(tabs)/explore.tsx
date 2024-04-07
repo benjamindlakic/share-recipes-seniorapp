@@ -1,5 +1,5 @@
 import ExploreHeader from "@/components/ExploreHeader";
-import Listings from "@/components/Listings";
+import Listings from "@/components/Recipes";
 import { Stack } from "expo-router";
 import React from "react";
 import { View } from "react-native";
@@ -12,7 +12,6 @@ const Page = () => {
             header: () => <ExploreHeader />,
             }}
         />
-        <Listings />
         </View>
     );
 };

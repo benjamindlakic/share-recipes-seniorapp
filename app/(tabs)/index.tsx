@@ -1,12 +1,15 @@
-import { Link } from 'expo-router';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text } from 'react-native';
+import recipesData from '@/assets/data/recipes.json';
+import Recipes from '@/components/Recipes';
+
 
 const Page = () => {
+    const items = useMemo(() => recipesData as any, []);
+
     return (
-        <View>
-            <Link href={'/(modals)/login'}>Login</Link>
-            <Link href={'/listing/25'}>Recipe Details</Link>
+        <View style={{flex: 1, marginTop: 50}}>
+            <Recipes recipes={items}/>
         </View>
     );
 };
