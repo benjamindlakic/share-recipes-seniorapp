@@ -1,10 +1,18 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import ExploreHeader from "@/components/ExploreHeader";
+import Listings from "@/components/Listings";
+import { Stack } from "expo-router";
+import React from "react";
+import { View } from "react-native";
 
 const Page = () => {
     return (
-        <View>
-            <Text>Welcome to the Explore screen!</Text>
+        <View style={{ flex: 1 }}>
+        <Stack.Screen
+            options={{
+            header: () => <ExploreHeader />,
+            }}
+        />
+        <Listings />
         </View>
     );
 };
