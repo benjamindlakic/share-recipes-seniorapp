@@ -8,7 +8,7 @@ import { TouchableOpacity } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
 
-const CLERK_PUBLISHABLE_KEY = 'pk_test_d29ya2FibGUtb3N0cmljaC03My5jbGVyay5hY2NvdW50cy5kZXYk';
+const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 const tokenCache = {
 
@@ -72,6 +72,7 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
+  
   useEffect(() => { 
     if(isLoaded && !isSignedIn) {
       router.push('/(modals)/login');
