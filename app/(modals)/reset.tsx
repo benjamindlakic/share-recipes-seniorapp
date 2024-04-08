@@ -1,11 +1,12 @@
 import { View, StyleSheet, TextInput, Button, TouchableOpacity, Text } from 'react-native';
 import React, { useState } from 'react';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useSignIn } from '@clerk/clerk-expo';
 import Colors from '@/constants/Colors';
 import { defaultStyles } from '@/constants/Styles';
 
 const PwReset = () => {
+    const router = useRouter();
 	const [emailAddress, setEmailAddress] = useState('');
 	const [password, setPassword] = useState('');
 	const [code, setCode] = useState('');
@@ -34,10 +35,11 @@ const PwReset = () => {
 				password
 			});
 			console.log(result);
-			alert('Password reset successfully');
 
 			// Set the user session active, which will log in the user automatically
 			await setActive!({ session: result.createdSessionId });
+            router.push('/(tabs)/explore');
+
 		} catch (err: any) {
 			alert(err.errors[0].message);
 		}

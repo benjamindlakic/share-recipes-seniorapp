@@ -41,6 +41,7 @@ const Page = () => {
 
       // This indicates the user is signed in
       await setActive({ session: completeSignIn.createdSessionId });
+      router.push("/(tabs)/explore");
     } catch (err: any) {
       alert(err.errors[0].message);
     } finally {
