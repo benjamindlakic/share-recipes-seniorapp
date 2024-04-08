@@ -10,7 +10,7 @@ const Recipes = ({recipes: items}: Props) => {
   const [loading, setLoading] = React.useState(false);
   const recipeRef = useRef<FlatList>(null);
   useEffect(() => {
-    console.log('RELOAD RECIPES:', items.length);
+    console.log('RELOAD RECIPES:', items.length); // Add null check before accessing length
     setLoading(true);
 
     setTimeout(() => {
@@ -19,6 +19,7 @@ const Recipes = ({recipes: items}: Props) => {
   }, [items]);
 
   const renderRow: ListRenderItem<any> = ({ item }) => (
+    
     <Link href={`/listing/${item.id}`}>
       Go there
     </Link>

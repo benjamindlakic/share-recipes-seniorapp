@@ -13,7 +13,7 @@ const ExploreHeader = () => {
     <SafeAreaView style={{flex: 1}}>
         <View style={styles.container}>
             <View style={styles.actionRow}>
-                <Link href={'/(tabs)/explore'} asChild>
+                <Link href={'/(modals)/search'} asChild>
                     <TouchableOpacity style={styles.searchBtn}>
                         <Ionicons name='search' size={24}></Ionicons>
                         <View>

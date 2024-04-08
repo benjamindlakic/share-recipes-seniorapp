@@ -92,6 +92,18 @@ function RootLayoutNav() {
       ),
     }} 
     />
+    <Stack.Screen name="(modals)/register" options={{ 
+      title: 'Create your account',
+      headerTitleStyle: { fontFamily: 'mon-sb' },
+      presentation: 'modal',
+    }} 
+    />
+    <Stack.Screen name="(modals)/reset" options={{ 
+      title: 'Reset your password',
+      headerTitleStyle: { fontFamily: 'mon-sb' },
+      presentation: 'modal',
+    }} 
+    />
     <Stack.Screen name="listing/[id]" options={{ headerTitle: ''}}/>
   </Stack>
   );
