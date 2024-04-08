@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack, router, useRouter } from 'expo-router';
+import { Stack, router, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { TouchableOpacity } from 'react-native';
@@ -72,12 +72,22 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
+  const segments = useSegments();
+
+	// If the user is signed in, redirect them to the home page
+	// If the user is not signed in, redirect them to the login page
+	useEffect(() => {
+		if (!isLoaded) return;
+
+		const inTabsGroup = segments[0] === '(auth)';
+
+		if (isSignedIn && !inTabsGroup) {
+			router.replace('/(tabs)/explore');
+		} else if (!isSignedIn) {
+			router.replace('/(modals)/login');
+		}
+	}, [isSignedIn]);
   
-  useEffect(() => { 
-    if(isLoaded && !isSignedIn) {
-      router.push('/(modals)/login');
-    }
-  }, [isLoaded]);
   return (
     <Stack>
     <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -95,13 +105,11 @@ function RootLayoutNav() {
     <Stack.Screen name="(modals)/register" options={{ 
       title: 'Create your account',
       headerTitleStyle: { fontFamily: 'mon-sb' },
-      presentation: 'modal',
     }} 
     />
     <Stack.Screen name="(modals)/reset" options={{ 
       title: 'Reset your password',
       headerTitleStyle: { fontFamily: 'mon-sb' },
-      presentation: 'modal',
     }} 
     />
     <Stack.Screen name="listing/[id]" options={{ headerTitle: ''}}/>
