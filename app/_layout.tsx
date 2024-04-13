@@ -112,7 +112,12 @@ function RootLayoutNav() {
       headerTitleStyle: { fontFamily: 'mon-sb' },
     }} 
     />
-    <Stack.Screen name="listing/[id]" options={{ headerTitle: ''}}/>
+    <Stack.Screen name="(modals)/editProfile" options={{ 
+      title: 'Edit your profile',
+      headerTitleStyle: { fontFamily: 'mon-sb' },
+    }} 
+    />
+    <Stack.Screen name="listing/[id]" options={{ headerTitle: '', headerTransparent: true}}/>
   </Stack>
   );
 }

@@ -18,7 +18,7 @@ const profile = () => {
         try {
             await user?.update({
                 firstName: firstName!,
-                lastName: lastName!
+                lastName: lastName!,
             });
         } catch (error) {
             console.log(error);
