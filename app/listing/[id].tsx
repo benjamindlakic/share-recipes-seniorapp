@@ -394,12 +394,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 10,
   },
-  bar:{
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 10,
-  },
   roundButton: {
     width: 40,
     height: 40,
