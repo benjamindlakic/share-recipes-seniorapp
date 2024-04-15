@@ -10,14 +10,17 @@ import React, { useEffect, useState } from "react";
 import { defaultStyles } from "@/constants/Styles";
 import { useUser } from "@clerk/clerk-expo";
 import Colors from "@/constants/Colors";
-import * as ImagePicker from "expo-image-picker"; // for image selection
+import * as ImagePicker from "expo-image-picker";
+import Animated from 'react-native-reanimated'
+
 
 const editProfile = () => {
   const { user } = useUser();
   const [firstName, setFirstName] = useState(user?.firstName);
   const [lastName, setLastName] = useState(user?.lastName);
-  const [bio, setBio] = useState(user?.bio);
   const [profileImage, setProfileImage] = useState(null);
+  const [birthday, setBirthday] = useState("");
+  const [password, setPassword] = useState("");
 
   const onSaveUser = async () => {
     try {
@@ -30,39 +33,32 @@ const editProfile = () => {
     }
   };
 
-  const pickImage = async () => {
-    // Request camera roll permission (optional for iOS)
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      alert("Sorry, we need camera roll permissions to choose an image.");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
+  const onCaptureImage = async () => {
+    const result=await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
+      quality: 0.75,
+      base64: true,
     });
-
-    if (!result.cancelled) {
-      // Update profileImage state with the selected image
-      setProfileImage(result.uri);
+    if (!result.canceled) {
+      const base64 = `data:image/png;base64,${result.assets[0].base64}`;
+      user?.setProfileImage({
+        file: base64,
+      })
     }
-  };
+  }
+
   useEffect(() => {
-  }, [user]); // Trigger on user object changes
+  }, [user]);
   return (
+    <Animated.ScrollView>
     <View style={styles.container}>
-      {profileImage ? (
-        <TouchableOpacity onPress={pickImage}>
-          <Image source={{ uri: profileImage }} style={styles.profileImage} />
+      {user &&
+        <TouchableOpacity onPress={onCaptureImage}>
+          <Image source={{ uri: user?.imageUrl }} style={styles.profileImage} />
         </TouchableOpacity>
-      ) : (
-        <TouchableOpacity onPress={pickImage} style={styles.profileImageContainer}>
-          <Text style={styles.profileImageText}>Add Profile Picture</Text>
-        </TouchableOpacity>
-      )}
+
+      }
       <TextInput
         placeholder="First Name"
         value={firstName || ""}
@@ -75,7 +71,7 @@ const editProfile = () => {
         onChangeText={setLastName}
         style={[defaultStyles.inputField, { marginTop: 20, height: 40 }]}
       />
-      <TextInput
+      {/* <TextInput
         placeholder="Add short bio (100 characters max)"
         value={bio || ""}
         onChangeText={setBio}
@@ -83,7 +79,8 @@ const editProfile = () => {
         multiline={true}
         style={[defaultStyles.inputField, { marginTop: 20, marginBottom: 20, height: 90, textAlignVertical: 'top'}]}
       />
-      <TouchableOpacity style={defaultStyles.btn} onPress={onSaveUser}>
+       */}
+      <TouchableOpacity  style={defaultStyles.btn} onPress={onSaveUser}>
         <Text style={defaultStyles.btnText}>Save changes</Text>
       </TouchableOpacity>
 
@@ -107,22 +104,19 @@ const editProfile = () => {
 
       <TextInput
         placeholder="Old password"
-        value={lastName || ""}
-        onChangeText={setLastName}
+        value={password || ""}
         style={[defaultStyles.inputField, { marginTop: 10, height: 40 }]}
       />
 
       <TextInput
         placeholder="New password"
-        value={lastName || ""}
-        onChangeText={setLastName}
+        value={password || ""}
         style={[defaultStyles.inputField, { marginTop: 20, height: 40 }]}
       />
 
       <TextInput
         placeholder="Repeat your new password"
-        value={lastName || ""}
-        onChangeText={setLastName}
+        value={password || ""}
         style={[defaultStyles.inputField, { marginTop: 20, height: 40, marginBottom: 20}]}
       />
 
@@ -130,6 +124,8 @@ const editProfile = () => {
         <Text style={defaultStyles.btnText}>Change password</Text>
       </TouchableOpacity>
     </View>
+    </Animated.ScrollView>
+
   );
 };
 
@@ -157,8 +153,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
   },
   profileImage: {
-    width: 150,
-    height: 150,
+    width: 80,
+    height: 80,
     borderRadius: 80,
     alignSelf: "center",
     marginTop: 50,

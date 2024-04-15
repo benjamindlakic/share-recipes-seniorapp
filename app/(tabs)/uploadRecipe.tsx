@@ -1,10 +1,16 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text,  } from 'react-native';
+import { Stack } from "expo-router";
+import AddHeader from '@/components/AddHeader';
 
 const Page = () => {
     return (
-        <View>
-            <Text>Welcome to the Upload Recipe screen!</Text>
+        <View style={{ flex: 1 }}>
+        <Stack.Screen
+            options={{
+            header: () => <AddHeader />,
+            }}
+        />
         </View>
     );
 };

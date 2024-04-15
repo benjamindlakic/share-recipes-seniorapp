@@ -32,7 +32,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-end', // Justify content to the right side
         paddingHorizontal: 16,
-
         paddingTop: 10,
         gap: 10,
     },

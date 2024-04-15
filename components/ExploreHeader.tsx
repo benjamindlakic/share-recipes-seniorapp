@@ -23,8 +23,7 @@ const ExploreHeader = () => {
                     </TouchableOpacity>
                 </Link>
                 <TouchableOpacity style={styles.filterBtn}>
-                    <Ionicons name='options-outline' size={24}></Ionicons>
-
+                    <Ionicons name='options-outline' size={20}></Ionicons>
                 </TouchableOpacity>
             </View>
         </View>
@@ -34,15 +33,15 @@ const ExploreHeader = () => {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
-        height: 90,
+        height: 60,
     },
     actionRow: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 16,
-        paddingBottom: 16,
-        paddingTop: 10,
+        paddingBottom: 10,
+        paddingTop: 8,
         gap: 10,
     },
     filterBtn:{
@@ -58,10 +57,9 @@ const styles = StyleSheet.create({
         borderColor: '#c2c2c2',
         borderWidth: StyleSheet.hairlineWidth,
         flex:1, 
-        padding: 14,
+        padding: 5,
         borderRadius: 30,
         backgroundColor: '#fff',
-
         elevation: 3,
         shadowColor: '#000',
         shadowOpacity: 0.02,

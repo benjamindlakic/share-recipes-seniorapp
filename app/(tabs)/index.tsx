@@ -18,7 +18,7 @@ const Page = () => {
                 header: () => <HomeHeader />,
             }}
             />
-            <View style={{flex: 1, marginTop: 45}}>
+            <View style={{flex: 1, marginTop: 20}}>
                 <Recipes recipes={items}/>
             </View>
             
