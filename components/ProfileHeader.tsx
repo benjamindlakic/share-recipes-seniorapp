@@ -14,7 +14,7 @@ const ProfileHeader = () => {
         <View style={styles.container}>
             <View style={styles.actionRow}>
                 <TouchableOpacity style={styles.logoutBtn}>
-                    <Ionicons name='share-social-outline' size={30} color={Colors.primary}></Ionicons>
+                    <Ionicons name='share-social-outline' size={24} color={Colors.primary}></Ionicons>
                 </TouchableOpacity>
             </View>
         </View>
@@ -38,5 +38,6 @@ const styles = StyleSheet.create({
     logoutBtn:{
         padding: 10,
     },
+
 })
 export default ProfileHeader

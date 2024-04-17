@@ -12,84 +12,150 @@ import AddHeader from "@/components/AddHeader";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
 import Animated from "react-native-reanimated";
+import { Picker } from "@react-native-picker/picker";
 
 const Page = () => {
   const [imageUri, setImageUri] = useState<string | null>(null);
-
-  function setRecipeTitle(text: string): void {
-    throw new Error("Function not implemented.");
-  }
+  const [selectedDifficulty, setSelectedDifficulty] = useState();
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
-        alert("Sorry, we need camera permissions to use the camera");
-        return;
+      alert("Sorry, we need camera permissions to use the camera");
+      return;
     }
 
-    let result: ImagePicker.ImagePickerResult = await ImagePicker.launchImageLibraryAsync({
+    let result: ImagePicker.ImagePickerResult =
+      await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.75,
-    });
+      });
     if (!result.canceled) {
-        
-        setImageUri(result.assets[0].uri);
-        console.log("Selected image URI:", result.assets[0].uri);
+      setImageUri(result.assets[0].uri);
     }
   };
-  
+
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff'}}>
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <Stack.Screen
         options={{
           header: () => <AddHeader />,
           headerLeft: () => <Ionicons></Ionicons>,
         }}
       />
-      <Animated.ScrollView>
-      <View style={styles.formContainer}>
-        <Text style={styles.headerStyle}>Title</Text>
-        <View style={{ paddingHorizontal: 10 }}>
-          <TextInput
-            placeholder="Give your recipe a name"
-            onChangeText={setRecipeTitle}
-            style={[defaultStyles.inputField, { height: 40, padding: 10 }]}
-          />
-        </View>
-        <View style={{padding: 10, alignItems: 'center', marginTop: 5}}>
-        {imageUri && (
-              <Image source={{ uri: imageUri }} style={styles.selectedImage} />
+      <Animated.ScrollView style={{marginTop: 20,}}>
+          <Text style={styles.headerStyle}>Title</Text>
+          <View style={{ paddingHorizontal: 10 }}>
+            <TextInput
+              placeholder="Give your recipe a name"
+              style={[defaultStyles.inputField, { height: 40, padding: 10 }]}
+            />
+          </View>
+          <View style={{ padding: 10, alignItems: "center", marginTop: 5 }}>
+            {imageUri && (
+              <>
+                <Image
+                  source={{ uri: imageUri }}
+                  style={[styles.selectedImage]}
+                />
+                <TouchableOpacity
+                  style={{
+                    position: "absolute",
+                    top: 100,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  onPress={pickImage}
+                >
+                  <Ionicons name="camera" size={24} color={Colors.primary} />
+                  <Text style={{ fontFamily: "mon-sb", color: "#fff" }}>
+                    Change photo
+                  </Text>
+                </TouchableOpacity>
+              </>
             )}
-          <TouchableOpacity
-            style={styles.imagePickerButton}
-            onPress={pickImage}
-          >
-            <Text style={styles.imagePickerButtonText}>Add Image</Text>
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.headerStyle}>Description</Text>
-        <View style={{ paddingHorizontal: 10 }}>
-          <TextInput
-            placeholder="Give your recipe a name"
-            onChangeText={setRecipeTitle}
-            style={[defaultStyles.inputField, { height: 100, padding: 10 }]}
-          />
-        </View>
-        <Text style={styles.headerStyle}>Ingredients</Text>
-        <View style={{ paddingHorizontal: 10 }}>
-          <TextInput
-            placeholder="Give your recipe a name"
-            onChangeText={setRecipeTitle}
-            style={[defaultStyles.inputField, { height: 100, padding: 10 }]}
-          />
-        </View>
-      </View>
+            {!imageUri && (
+              <TouchableOpacity onPress={pickImage}>
+                <View
+                  style={{
+                    backgroundColor: Colors.grey,
+                    width: 340,
+                    height: 200,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 8,
+                  }}
+                >
+                  <Ionicons name="camera" size={24} color={Colors.primary} />
+                  <Text style={{ fontFamily: "mon-sb", color: "#fff" }}>
+                    Add photo
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          </View>
+          <Text style={styles.headerStyle}>Description</Text>
+          <View style={{ paddingHorizontal: 10 }}>
+            <TextInput
+              placeholder="Introduce your recipe, add notes, tips, etc."
+              style={[
+                defaultStyles.inputField,
+                { height: 100, padding: 10, paddingVertical: 20 },
+              ]}
+              multiline={true}
+            />
+          </View>
+          <Text style={styles.headerStyle}>Ingredients</Text>
+          <View style={{ paddingHorizontal: 10 }}>
+            <TextInput
+              placeholder="Add one ingredient, then press enter"
+              style={[defaultStyles.inputField, { height: 40, padding: 10 }]}
+            />
+          </View>
+          <Text style={styles.headerStyle}>Instructions</Text>
+          <View style={{ paddingHorizontal: 10 }}>
+            <TextInput
+              placeholder="Add one step, then press enter"
+              style={[defaultStyles.inputField, { height: 40, padding: 10 }]}
+            />
+          </View>
+          <Text style={styles.headerStyle}>Preparation Time</Text>
+          <View style={{ paddingHorizontal: 10 }}>
+            <TextInput
+              placeholder="# of minutes for this recipe"
+              style={[defaultStyles.inputField, { height: 40, padding: 10 }]}
+              keyboardType="numeric"
+              onChangeText={(text) => {
+                const regex = /^[0-9]*$/;
+                if (regex.test(text)) {
+                  // UPDATE STATE
+                } else {
+                  // NOTHING, DONT LET TYPE
+                }
+              }}
+            />
+          </View>
+          <Text style={styles.headerStyle}>Difficulty</Text>
+          <View style={{ paddingHorizontal: 10 }}>
+            <Picker
+              style={{flex:1}}
+              mode="dropdown"
+              dropdownIconColor={Colors.primary}
+              selectedValue={selectedDifficulty}
+              onValueChange={(itemValue, itemIndex) =>
+                setSelectedDifficulty(itemValue)
+              }
+            >
+              <Picker.Item label="Easy" value="easy" />
+              <Picker.Item label="Medium" value="medium" />
+              <Picker.Item label="Hard" value="hard" />
+            </Picker>
+          </View>
       </Animated.ScrollView>
-
     </View>
   );
 };
@@ -131,7 +197,7 @@ const styles = StyleSheet.create({
   },
   imagePickerButton: {
     padding: 10,
-    backgroundColor: Colors.primary, 
+    backgroundColor: Colors.primary,
     borderRadius: 5,
     marginTop: 10,
   },

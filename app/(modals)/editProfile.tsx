@@ -12,15 +12,15 @@ import { useUser } from "@clerk/clerk-expo";
 import Colors from "@/constants/Colors";
 import * as ImagePicker from "expo-image-picker";
 import Animated from 'react-native-reanimated'
+import { Ionicons } from "@expo/vector-icons";
 
 
 const editProfile = () => {
   const { user } = useUser();
   const [firstName, setFirstName] = useState(user?.firstName);
   const [lastName, setLastName] = useState(user?.lastName);
-  const [profileImage, setProfileImage] = useState(null);
-  const [birthday, setBirthday] = useState("");
   const [password, setPassword] = useState("");
+  const [bio, setBio] = useState("");
 
   const onSaveUser = async () => {
     try {
@@ -54,8 +54,9 @@ const editProfile = () => {
     <Animated.ScrollView>
     <View style={styles.container}>
       {user &&
-        <TouchableOpacity onPress={onCaptureImage}>
+        <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', marginTop: 0,}}onPress={onCaptureImage}>
           <Image source={{ uri: user?.imageUrl }} style={styles.profileImage} />
+          <Ionicons name='camera' size={24} color={Colors.primary} style={{position: 'absolute',}}/>
         </TouchableOpacity>
 
       }
@@ -71,15 +72,14 @@ const editProfile = () => {
         onChangeText={setLastName}
         style={[defaultStyles.inputField, { marginTop: 20, height: 40 }]}
       />
-      {/* <TextInput
+      <TextInput
         placeholder="Add short bio (100 characters max)"
         value={bio || ""}
-        onChangeText={setBio}
         maxLength={150}
         multiline={true}
         style={[defaultStyles.inputField, { marginTop: 20, marginBottom: 20, height: 90, textAlignVertical: 'top'}]}
       />
-       */}
+      
       <TouchableOpacity  style={defaultStyles.btn} onPress={onSaveUser}>
         <Text style={defaultStyles.btnText}>Save changes</Text>
       </TouchableOpacity>
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    padding: 26,
+    padding: 20,
   },
   separatorView: {
     flexDirection: "row",

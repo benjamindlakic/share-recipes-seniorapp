@@ -8,9 +8,10 @@ import { useFonts } from "expo-font";
 import { Stack, router, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View, Text} from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
+import Colors from "@/constants/Colors";
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -114,14 +115,26 @@ function RootLayoutNav() {
         name="(modals)/register"
         options={{
           title: "Create your account",
+          presentation: 'fullScreenModal',
           headerTitleStyle: { fontFamily: "mon-sb" },
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="close-outline" size={28} />
+            </TouchableOpacity>
+          ),
         }}
       />
       <Stack.Screen
         name="(modals)/reset"
         options={{
           title: "Reset your password",
+          presentation: 'fullScreenModal',
           headerTitleStyle: { fontFamily: "mon-sb" },
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="close-outline" size={28} />
+            </TouchableOpacity>
+          ),
         }}
       />
       <Stack.Screen
@@ -147,14 +160,9 @@ function RootLayoutNav() {
       <Stack.Screen
         name="(modals)/filter"
         options={{ 
-          presentation: "transparentModal",
           headerTransparent: true,   
           animation: 'fade',
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="close-outline" size={28} />
-            </TouchableOpacity>
-          ),
+          
         }}
       />
     </Stack>

@@ -1,18 +1,27 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, Alert} from 'react-native'
 import React from 'react'
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { defaultStyles } from '@/constants/Styles';
 import Colors from '@/constants/Colors';
 
   
 const AddHeader = () => {
+
+  const handleSavePress = () => {
+    if (true) {
+      Alert.alert('Success!', 'Your recipe has been saved successfully.');
+      // onSaveChanges?.();
+    } else {
+      Alert.alert('Error', 'Please ensure all required fields are filled correctly.');
+    }
+  };
+  
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.container}>
         <View style={styles.actionRow}>
-          <Text style={styles.headerText}>Add recipe</Text>
-          <TouchableOpacity style={styles.btnSave}>
+          <Text style={[styles.headerText]}>Add recipe</Text>
+          <TouchableOpacity style={styles.btnSave} onPress={handleSavePress}>
             <Text style={styles.btnText}>Save</Text>
           </TouchableOpacity>
         </View>
@@ -49,7 +58,6 @@ const styles = StyleSheet.create({
     headerText: {
       fontFamily: 'mon-sb',
       fontSize: 18,
-      marginTop: 5,
     },
 })
 export default AddHeader

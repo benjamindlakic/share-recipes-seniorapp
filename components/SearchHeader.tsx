@@ -1,30 +1,38 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import React from "react";
+import { View, Text, TouchableOpacity, TextInput } from "react-native";
+import React, { useState } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 
-const ExploreHeader = () => {
+const SearchHeader = () => {
+
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <View style={styles.actionRow}>
-          <Link href={"/(modals)/filter"} asChild>
-            <TouchableOpacity style={styles.searchBtn}>
-              <Ionicons
-                name="search"
-                size={24}
-                color={Colors.primary}
-              ></Ionicons>
-              <View>
-                <Text style={{ fontFamily: "mon-sb", fontSize: 16 }}>
-                  Search
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </Link>
+          <Ionicons
+            name="chevron-back"
+            size={24}
+            color={Colors.primary}
+            onPress={router.back}
+          />
+          <TouchableOpacity style={styles.searchBtn}>
+            <Ionicons name="search" size={24} color={Colors.primary}></Ionicons>
+            <View>
+              <TextInput
+                style={{ fontFamily: "mon-sb", fontSize: 16 }}
+                placeholder="Try 'chicken', 'avocado'"
+              ></TextInput>
+            </View>
+          </TouchableOpacity>
+          <Ionicons
+            name="close-circle-outline"
+            size={24}
+            color={Colors.primary}
+          ></Ionicons>
         </View>
       </View>
     </SafeAreaView>
@@ -67,4 +75,4 @@ const styles = StyleSheet.create({
     },
   },
 });
-export default ExploreHeader;
+export default SearchHeader;
