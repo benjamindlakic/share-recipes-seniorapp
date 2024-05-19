@@ -1,26 +1,30 @@
 import Colors from "@/constants/Colors";
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { useAuth } from "@clerk/clerk-expo";
 import { StyleSheet, TouchableOpacity } from "react-native";
+import { useAuth } from "@/providers/AuthProvider";
 
 export const LogoutButton = () => {
-  const { signOut } = useAuth();
+  // const { signOut } = useAuth();
 
-  const doLogout = () => {
-    signOut();
-  };
+  // const doLogout = () => {
+  //   signOut();
+  // };
 
   return (
-    <TouchableOpacity onPress={doLogout} style={styles.logoutBtn}>
+    <TouchableOpacity style={styles.logoutBtn}>
       <Ionicons name="log-out-outline" size={24} />
     </TouchableOpacity>
   );
 };
 
 const Layout = () => {
-  const { isSignedIn } = useAuth();
+  const { session } = useAuth();
+
+  if (!session) {
+      return <Redirect href={'/'}/>;
+  }
 
   return (
     <Tabs
@@ -37,7 +41,7 @@ const Layout = () => {
             <Ionicons name="home" size={size} color={color} />
           ),
         }}
-        redirect={!isSignedIn}
+        // redirect={!isSignedIn}
       />
       <Tabs.Screen
         name="explore"
@@ -47,7 +51,7 @@ const Layout = () => {
             <Ionicons name="fast-food" size={size} color={color} />
           ),
         }}
-        redirect={!isSignedIn}
+        // redirect={!isSignedIn}
       />
       <Tabs.Screen
         name="uploadRecipe"
@@ -57,7 +61,7 @@ const Layout = () => {
             <Ionicons name="add-circle" size={size} color={color} />
           ),
         }}
-        redirect={!isSignedIn}
+        // redirect={!isSignedIn}
       />
       <Tabs.Screen
         name="profile"
@@ -68,7 +72,7 @@ const Layout = () => {
           ),
     
         }}
-        redirect={!isSignedIn}
+        // redirect={!isSignedIn}
       />
     </Tabs>
   );

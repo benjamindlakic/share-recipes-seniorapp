@@ -8,12 +8,9 @@ import { useFonts } from "expo-font";
 import { Stack, router, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { TouchableOpacity, View, Text} from "react-native";
+import { TouchableOpacity, View, Text } from "react-native";
 import * as SecureStore from "expo-secure-store";
-import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
-import Colors from "@/constants/Colors";
-
-const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+import AuthProvider from "@/providers/AuthProvider";
 
 const tokenCache = {
   async getToken(key: string) {
@@ -66,105 +63,59 @@ export default function RootLayout() {
     return null;
   }
 
-  return (
-    <ClerkProvider
-      publishableKey={CLERK_PUBLISHABLE_KEY!}
-      tokenCache={tokenCache}
-    >
-      <RootLayoutNav />
-    </ClerkProvider>
-  );
+  return <RootLayoutNav />;
 }
 
 function RootLayoutNav() {
   const router = useRouter();
-  const { isLoaded, isSignedIn } = useAuth();
   const segments = useSegments();
 
-  // If the user is signed in, redirect them to the home page
-  // If the user is not signed in, redirect them to the login page
-  useEffect(() => {
-    if (!isLoaded) return;
-
-    const inTabsGroup = segments[0] === "(auth)";
-
-    if (isSignedIn && !inTabsGroup) {
-      router.replace("/(tabs)/explore");
-    } else if (!isSignedIn) {
-      router.replace("/(modals)/login");
-    }
-  }, [isSignedIn]);
-
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="(modals)/login"
-        options={{
-          title: "Log in or sign up",
-          headerTitleStyle: { fontFamily: "mon-sb" },
-          presentation: "modal",
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="close-outline" size={28} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/register"
-        options={{
-          title: "Create your account",
-          presentation: 'fullScreenModal',
-          headerTitleStyle: { fontFamily: "mon-sb" },
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="close-outline" size={28} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/reset"
-        options={{
-          title: "Reset your password",
-          presentation: 'fullScreenModal',
-          headerTitleStyle: { fontFamily: "mon-sb" },
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="close-outline" size={28} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/editProfile"
-        options={{
-          title: "Edit your profile",
-          headerTitleStyle: { fontFamily: "mon-sb" },
-          presentation: "modal",
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="close-outline" size={28} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <Stack.Screen
-        name="listing/[id]"
-        options={{ 
-          headerTitle: "", 
-          headerTransparent: true,   
-        }}
-      />
-      <Stack.Screen
-        name="(modals)/filter"
-        options={{ 
-          headerTransparent: true,   
-          animation: 'fade',
-          
-        }}
-      />
-    </Stack>
+    <AuthProvider>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="(modals)/reset"
+          options={{
+            title: "Reset your password",
+            presentation: "fullScreenModal",
+            headerTitleStyle: { fontFamily: "mon-sb" },
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => router.back()}>
+                <Ionicons name="close-outline" size={28} />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="(modals)/editProfile"
+          options={{
+            title: "Edit your profile",
+            headerTitleStyle: { fontFamily: "mon-sb" },
+            presentation: "modal",
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => router.back()}>
+                <Ionicons name="close-outline" size={28} />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+        <Stack.Screen
+          name="listing/[id]"
+          options={{
+            headerTitle: "",
+            headerTransparent: true,
+          }}
+        />
+        <Stack.Screen
+          name="(modals)/filter"
+          options={{
+            headerTransparent: true,
+            animation: "fade",
+          }}
+        />
+      </Stack>
+    </AuthProvider>
   );
 }

@@ -1,35 +1,37 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { useState } from "react";
-import { useAuth, useUser } from "@clerk/clerk-expo";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import ProfileHeader from "@/components/ProfileHeader";
 import { Link, Stack, useRouter } from "expo-router";
+import { supabase } from "@/lib/supabase";
 
 const profile = () => {
   const router = useRouter();
-  const { user } = useUser();
-  const [firstName, setFirstName] = useState(user?.firstName);
-  const [lastName, setLastName] = useState(user?.lastName);
+  // const [firstName, setFirstName] = useState(user?.firstName);
+  // const [lastName, setLastName] = useState(user?.lastName);
 
-  const onSaveUser = async () => {
-    try {
-      await user?.update({
-        firstName: firstName!,
-        lastName: lastName!,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const onSaveUser = async () => {
+  //   try {
+  //     await user?.update({
+  //       firstName: firstName!,
+  //       lastName: lastName!,
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
-  const { signOut } = useAuth();
+  // const { signOut } = useAuth();
 
+  // const doLogout = () => {
+  //   signOut();
+  // };
+
+  // const { isSignedIn } = useAuth();
   const doLogout = () => {
-    signOut();
+    router.push("register");
   };
-
-  const { isSignedIn } = useAuth();
 
   return (
     <View style={styles.container}>
@@ -39,34 +41,34 @@ const profile = () => {
         }}
       />
 
-      <Image source={{ uri: user?.imageUrl }} style={styles.profileImage} />
+      <Image source={{ uri: 'https://avatar.iran.liara.run/public/boy?username=Ash' }} style={styles.profileImage} />
       <Text style={{ textAlign: "center", fontFamily: "mon-sb", fontSize: 24 }}>
-        {user?.firstName} {user?.lastName}
+        Benjamin Dlakic
       </Text>
 
       <View style={styles.statsContainer}>
         <View style={styles.stat}>
-          <Text style={styles.statText}>{user?.recipesCount || 0}</Text>
+          <Text style={styles.statText}>2</Text>
           <Text style={styles.statLabel}>Recipes</Text>
         </View>
         <View style={styles.stat}>
           <Text style={styles.divider}></Text>
         </View>
         <View style={styles.stat}>
-          <Text style={styles.statText}>{user?.followingCount || 0}</Text>
+          <Text style={styles.statText}>123</Text>
           <Text style={styles.statLabel}>Following</Text>
         </View>
         <View style={styles.stat}>
           <Text style={styles.divider}></Text>
         </View>
         <View style={styles.stat}>
-          <Text style={styles.statText}>{user?.followersCount || 0}</Text>
+          <Text style={styles.statText}>455</Text>
           <Text style={styles.statLabel}>Followers</Text>
         </View>
       </View>
 
       <Text style={styles.bioText}>
-        {user?.bio || "Add a short bio about yourself"}
+        I am a chef who loves to cook and share my recipes with the world.
       </Text>
 
       <View style={styles.buttonsContainer}>
@@ -75,7 +77,7 @@ const profile = () => {
             <Text style={styles.btnOutlineText}>Edit Profile</Text>
           </TouchableOpacity>
         </Link>
-        <TouchableOpacity style={styles.btnOutline} onPress={doLogout}>
+        <TouchableOpacity style={styles.btnOutline} onPress={() => supabase.auth.signOut()} >
           <Text style={styles.btnOutlineText}>Logout</Text>
         </TouchableOpacity>
       </View>

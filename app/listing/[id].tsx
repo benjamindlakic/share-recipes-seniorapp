@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
-  Image,
   Share,
 } from "react-native";
 import React, { useLayoutEffect } from "react";
@@ -15,19 +14,17 @@ import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { defaultStyles } from "@/constants/Styles";
-import { useUser } from "@clerk/clerk-expo";
-
 const IMG_HEIGHT = 300;
 const { width } = Dimensions.get("window");
 
 const Page = () => {
-  const { user } = useUser();
   const { id } = useLocalSearchParams<{ id: string }>();
   const recipe = (recipeData as any[]).find((item) => item.id === id);
   const [expanded, setExpanded] = React.useState(false);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const navigation = useNavigation();
   const scrollOffset = useScrollViewOffset(scrollRef);
+
   const shareRecipe = async () => {
     try {
       await Share.share({
@@ -39,6 +36,7 @@ const Page = () => {
       console.error(error);
     }
   };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerBackground: () => (
@@ -169,7 +167,7 @@ const Page = () => {
           </TouchableOpacity>
 
           <View style={styles.chef}>
-          <Image source={{ uri: user?.imageUrl }} style={styles.profileImage} />
+          {/* <Image source={{ uri: user?.imageUrl }} style={styles.profileImage} /> */}
             <Text
               style={{
                 fontFamily: "mon-sb",

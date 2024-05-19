@@ -1,6 +1,5 @@
 import ExploreHeader from "@/components/ExploreHeader";
 import Listings from "@/components/Recipes";
-import { useUser } from "@clerk/clerk-expo";
 import { Stack } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, ScrollView, Image, StyleSheet } from "react-native";
@@ -11,7 +10,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 
 const Page = () => {
-  const { user } = useUser();
+  // const { user } = useUser();
   const items = useMemo(() => recipesData as any, []);
 
   return (
@@ -41,23 +40,23 @@ const Page = () => {
             </View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <View style={{padding: 16, justifyContent: 'center', alignItems: 'center'}}>
-                    <Image source={{ uri: user?.imageUrl }} style={styles.profileImage} />
-                    <Text style={{ fontFamily: "mon-sb", fontSize: 14, textAlign: 'center', marginTop: 5}}>{user?.firstName} {user?.lastName}</Text>
+                    <Image source={{ uri: 'https://avatar.iran.liara.run/public/boy?username=Ash' }} style={styles.profileImage} />
+                    <Text style={{ fontFamily: "mon-sb", fontSize: 14, textAlign: 'center', marginTop: 5}}>Benjamin Dlakic</Text>
                     <Text style={{ fontFamily: "mon", fontSize: 12, textAlign: 'center', marginTop: 5}}>12K Followers</Text>
                 </View>
                 <View style={{padding: 16, justifyContent: 'center', alignItems: 'center'}}>
-                    <Image source={{ uri: user?.imageUrl }} style={styles.profileImage} />
-                    <Text style={{ fontFamily: "mon-sb", fontSize: 14, textAlign: 'center', marginTop: 5}}>{user?.firstName} {user?.lastName}</Text>
+                    <Image source={{ uri: 'https://avatar.iran.liara.run/public/boy?username=Ash' }} style={styles.profileImage} />
+                    <Text style={{ fontFamily: "mon-sb", fontSize: 14, textAlign: 'center', marginTop: 5}}>Tarik Karahodzic</Text>
                     <Text style={{ fontFamily: "mon", fontSize: 12, textAlign: 'center', marginTop: 5}}>12K Followers</Text>
                 </View>
                 <View style={{padding: 16, justifyContent: 'center', alignItems: 'center'}}>
-                    <Image source={{ uri: user?.imageUrl }} style={styles.profileImage} />
-                    <Text style={{ fontFamily: "mon-sb", fontSize: 14, textAlign: 'center', marginTop: 5}}>{user?.firstName} {user?.lastName}</Text>
+                    <Image source={{ uri: 'https://avatar.iran.liara.run/public/boy?username=Ash' }} style={styles.profileImage} />
+                    <Text style={{ fontFamily: "mon-sb", fontSize: 14, textAlign: 'center', marginTop: 5}}>Amir Basovic</Text>
                     <Text style={{ fontFamily: "mon", fontSize: 12, textAlign: 'center', marginTop: 5}}>12K Followers</Text>
                 </View>
                 <View style={{padding: 16, justifyContent: 'center', alignItems: 'center'}}>
-                    <Image source={{ uri: user?.imageUrl }} style={styles.profileImage} />
-                    <Text style={{ fontFamily: "mon-sb", fontSize: 14, textAlign: 'center', marginTop: 5}}>{user?.firstName} {user?.lastName}</Text>
+                    <Image source={{ uri: 'https://avatar.iran.liara.run/public/boy?username=Ash' }} style={styles.profileImage} />
+                    <Text style={{ fontFamily: "mon-sb", fontSize: 14, textAlign: 'center', marginTop: 5}}>Kerim Sabic</Text>
                     <Text style={{ fontFamily: "mon", fontSize: 12, textAlign: 'center', marginTop: 5}}>12K Followers</Text>
                 </View>
             </ScrollView>

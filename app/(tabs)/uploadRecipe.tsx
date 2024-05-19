@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TextInput,
   Image,
+  Alert,
 } from "react-native";
 import { Stack, useNavigation } from "expo-router";
 import AddHeader from "@/components/AddHeader";
@@ -15,10 +16,72 @@ import { defaultStyles } from "@/constants/Styles";
 import * as ImagePicker from "expo-image-picker";
 import Animated from "react-native-reanimated";
 import { Picker } from "@react-native-picker/picker";
+import { set } from "mongoose";
 
-const Page = () => {
+const UploadRecipe = () => {
   const [imageUri, setImageUri] = useState<string | null>(null);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [ingredients, setIngredients] = useState('');
+  const [instructions, setInstructions] = useState('');
+  const [preparationTime, setPreparationTime] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState();
+  const [errors, setErrors] = useState('');
+
+  const resetForm = () => {
+    setTitle('');
+    setDescription('');
+    setIngredients('');
+    setInstructions('');
+    setPreparationTime('');
+    setImageUri(null);
+  }
+
+  const validateForm = () => {
+    setErrors('');
+    if (!title){
+      setErrors('Please enter a title');
+      return false;
+    }
+    if (!description){
+      setErrors('Please enter a description');
+      return false;
+    }
+    if (!ingredients){
+      setErrors('Please enter ingredients');
+      return false;
+    }
+    if (!instructions){
+      setErrors('Please enter instructions');
+      return false;
+    }
+    if (!preparationTime){
+      setErrors('Please enter preparation time');
+      return false;
+    }
+    if (isNaN(Number(preparationTime))) {
+      setErrors('Preparation time must be a number');
+      return false;
+    }
+    if (!selectedDifficulty){
+      setErrors('Please select a difficulty');
+      return false;
+    }
+    if(!imageUri){
+      setErrors('Please select an image');
+      return false;
+    }
+    return true;
+  }
+    
+  const handleSavePress = () => {
+    if (!validateForm()){
+      return;
+    }
+    console.warn('Uploaded recipe with title: ', title);
+    resetForm();
+
+  };
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -51,6 +114,8 @@ const Page = () => {
           <Text style={styles.headerStyle}>Title</Text>
           <View style={{ paddingHorizontal: 10 }}>
             <TextInput
+              value={title}
+              onChangeText={setTitle}
               placeholder="Give your recipe a name"
               style={[defaultStyles.inputField, { height: 40, padding: 10 }]}
             />
@@ -101,6 +166,8 @@ const Page = () => {
           <Text style={styles.headerStyle}>Description</Text>
           <View style={{ paddingHorizontal: 10 }}>
             <TextInput
+              value={description}
+              onChangeText={setDescription}
               placeholder="Introduce your recipe, add notes, tips, etc."
               style={[
                 defaultStyles.inputField,
@@ -112,6 +179,8 @@ const Page = () => {
           <Text style={styles.headerStyle}>Ingredients</Text>
           <View style={{ paddingHorizontal: 10 }}>
             <TextInput
+              value={ingredients}
+              onChangeText={setIngredients}
               placeholder="Add one ingredient, then press enter"
               style={[defaultStyles.inputField, { height: 40, padding: 10 }]}
             />
@@ -119,6 +188,8 @@ const Page = () => {
           <Text style={styles.headerStyle}>Instructions</Text>
           <View style={{ paddingHorizontal: 10 }}>
             <TextInput
+              value={instructions}
+              onChangeText={setInstructions}
               placeholder="Add one step, then press enter"
               style={[defaultStyles.inputField, { height: 40, padding: 10 }]}
             />
@@ -126,17 +197,11 @@ const Page = () => {
           <Text style={styles.headerStyle}>Preparation Time</Text>
           <View style={{ paddingHorizontal: 10 }}>
             <TextInput
+              value={preparationTime}
+              onChangeText={setPreparationTime}
               placeholder="# of minutes for this recipe"
               style={[defaultStyles.inputField, { height: 40, padding: 10 }]}
               keyboardType="numeric"
-              onChangeText={(text) => {
-                const regex = /^[0-9]*$/;
-                if (regex.test(text)) {
-                  // UPDATE STATE
-                } else {
-                  // NOTHING, DONT LET TYPE
-                }
-              }}
             />
           </View>
           <Text style={styles.headerStyle}>Difficulty</Text>
@@ -155,12 +220,16 @@ const Page = () => {
               <Picker.Item label="Hard" value="hard" />
             </Picker>
           </View>
+          <Text style={{color: 'red', textAlign: 'center', fontFamily: 'mon-r', margin: 5}}>{errors}</Text>
+          <TouchableOpacity style={styles.btnSave} onPress={handleSavePress}>
+            <Text style={styles.btnText}>Save</Text>
+          </TouchableOpacity>
       </Animated.ScrollView>
     </View>
   );
 };
 
-export default Page;
+export default UploadRecipe;
 
 const styles = StyleSheet.create({
   roundButton: {
@@ -212,5 +281,21 @@ const styles = StyleSheet.create({
     height: 200,
     resizeMode: "stretch",
     borderRadius: 8,
+    alignSelf: "center",
+  },
+  btnSave: {
+    backgroundColor: Colors.primary,
+    borderRadius: 32,
+    height: 50,
+    width: 350,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+    alignSelf: "center",
+  },
+  btnText: {
+    color: '#fff',
+    fontFamily: 'mon-b',
+    fontSize: 16
   },
 });
