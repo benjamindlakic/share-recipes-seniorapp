@@ -23,7 +23,7 @@ const Layout = () => {
   const { session } = useAuth();
 
   if (!session) {
-      return <Redirect href={'/'}/>;
+      return <Redirect href={'/login'}/>;
   }
 
   return (

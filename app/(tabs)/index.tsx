@@ -16,7 +16,7 @@ const Page = () => {
     }
 
     if (!session) {
-        return <Redirect href="/login" />;
+        return <Redirect href={'/login'} />;
     }
     return (
 

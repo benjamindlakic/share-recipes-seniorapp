@@ -13,7 +13,6 @@ import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import { Ionicons } from "@expo/vector-icons";
 import { supabase } from '@/lib/supabase';
-import { set } from "mongoose";
 
 const register = () => {
   const [email, setEmail] = useState("");
@@ -22,7 +21,7 @@ const register = () => {
 
   async function signUpWithEmail(){
 	setLoading(true);
-	const { error } = await supabase.auth.signUp({ email, password });
+	const { error } = await supabase.auth.signUp({ email, password  });
 
 	if (error) Alert.alert(error.message);
 	setLoading(false);
@@ -35,7 +34,7 @@ return (
 				title: "Create your account",
 				headerTitleStyle: { fontFamily: "mon-sb" },
 				headerLeft: () => (
-					<></> // Empty header left
+					<></>
 				),
 			}}
 		/>
