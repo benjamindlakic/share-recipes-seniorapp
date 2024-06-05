@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useRef } from "react";
 import { defaultStyles } from "@/constants/Styles";
@@ -13,21 +14,34 @@ import { Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { supabase } from "@/lib/supabase";
+import { useQuery } from "@tanstack/react-query";
 
 interface Props {
   recipes: any[];
 }
 const Recipes = ({ recipes: items }: Props) => {
-  const [loading, setLoading] = React.useState(false);
-  const recipeRef = useRef<FlatList>(null);
-  useEffect(() => {
-    console.log("RELOAD RECIPES:", items.length);
-    setLoading(true);
 
-    setTimeout(() => {
-      setLoading(false);
-    }, 200);
-  }, [items]);
+  const { data: recipes, error, isLoading} = useQuery({
+    queryKey: ['recipes'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("recipes").select("*");
+      if(error) {
+        throw new Error(error.message);
+      }
+      return data;
+    }
+  })
+
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
+
+  if (error) {
+    return <Text>Failed to fetch products.</Text>;
+  }
+
+  const recipeRef = useRef<FlatList>(null);
 
   const renderRow: ListRenderItem<any> = ({ item }) => (
     <Link href={`/listing/${item.id}`} asChild>
@@ -84,7 +98,7 @@ const Recipes = ({ recipes: items }: Props) => {
               size={20}
               color={Colors.dark}
             ></Ionicons>
-            <Text style={styles.infoText}>{item.time}</Text>
+            <Text style={styles.infoText}>{item.cookingTime} min</Text>
             <Text style={styles.divider}></Text>
             <MaterialCommunityIcons
               name="pot-steam-outline"
@@ -108,9 +122,9 @@ const Recipes = ({ recipes: items }: Props) => {
   return (
     <View style={defaultStyles.container}>
       <FlatList
+        data={recipes}
         renderItem={renderRow}
         ref={recipeRef}
-        data={loading ? [] : items}
       />
     </View>
   );

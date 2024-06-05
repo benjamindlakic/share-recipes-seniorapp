@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import { TouchableOpacity, View, Text } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import AuthProvider from "@/providers/AuthProvider";
+import QueryProvider from "@/providers/QueryProvider";
 
 const tokenCache = {
   async getToken(key: string) {
@@ -72,50 +73,52 @@ function RootLayoutNav() {
 
   return (
     <AuthProvider>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="(modals)/reset"
-          options={{
-            title: "Reset your password",
-            presentation: "fullScreenModal",
-            headerTitleStyle: { fontFamily: "mon-sb" },
-            headerLeft: () => (
-              <TouchableOpacity onPress={() => router.back()}>
-                <Ionicons name="close-outline" size={28} />
-              </TouchableOpacity>
-            ),
-          }}
-        />
-        <Stack.Screen
-          name="(modals)/editProfile"
-          options={{
-            title: "Edit your profile",
-            headerTitleStyle: { fontFamily: "mon-sb" },
-            presentation: "modal",
-            headerLeft: () => (
-              <TouchableOpacity onPress={() => router.back()}>
-                <Ionicons name="close-outline" size={28} />
-              </TouchableOpacity>
-            ),
-          }}
-        />
-        <Stack.Screen
-          name="listing/[id]"
-          options={{
-            headerTitle: "",
-            headerTransparent: true,
-          }}
-        />
-        <Stack.Screen
-          name="(modals)/filter"
-          options={{
-            headerTransparent: true,
-            animation: "fade",
-          }}
-        />
-      </Stack>
+      <QueryProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="(modals)/reset"
+            options={{
+              title: "Reset your password",
+              presentation: "fullScreenModal",
+              headerTitleStyle: { fontFamily: "mon-sb" },
+              headerLeft: () => (
+                <TouchableOpacity onPress={() => router.back()}>
+                  <Ionicons name="close-outline" size={28} />
+                </TouchableOpacity>
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="(modals)/editProfile"
+            options={{
+              title: "Edit your profile",
+              headerTitleStyle: { fontFamily: "mon-sb" },
+              presentation: "modal",
+              headerLeft: () => (
+                <TouchableOpacity onPress={() => router.back()}>
+                  <Ionicons name="close-outline" size={28} />
+                </TouchableOpacity>
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="listing/[id]"
+            options={{
+              headerTitle: "",
+              headerTransparent: true,
+            }}
+          />
+          <Stack.Screen
+            name="(modals)/filter"
+            options={{
+              headerTransparent: true,
+              animation: "fade",
+            }}
+          />
+        </Stack>
+      </QueryProvider>
     </AuthProvider>
   );
 }
