@@ -8,110 +8,54 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { defaultStyles } from "@/constants/Styles";
 import { Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { supabase } from "@/lib/supabase";
-import { useQuery } from "@tanstack/react-query";
+import { useRecipeList } from "@/api/recipes";
 
-interface Props {
-  recipes: any[];
-}
-const Recipes = ({ recipes: items }: Props) => {
-
-  const { data: recipes, error, isLoading} = useQuery({
-    queryKey: ['recipes'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("recipes").select("*");
-      if(error) {
-        throw new Error(error.message);
-      }
-      return data;
-    }
-  })
+const Recipes = () => {
+  const { data: recipes, error, isLoading } = useRecipeList();
+  
+  const recipeRef = useRef<FlatList>(null);
 
   if (isLoading) {
     return <ActivityIndicator />;
   }
 
   if (error) {
-    return <Text>Failed to fetch products.</Text>;
+    return <Text>Failed to fetch recipes.</Text>;
   }
-
-  const recipeRef = useRef<FlatList>(null);
 
   const renderRow: ListRenderItem<any> = ({ item }) => (
     <Link href={`/listing/${item.id}`} asChild>
       <TouchableOpacity>
         <View style={styles.recipes}>
           <Image source={{ uri: item.image }} style={styles.image} />
-          <TouchableOpacity
-            style={{
-              position: "absolute",
-              right: 30,
-              top: 30,
-              alignItems: "center",
-            }}
-          >
-            <Ionicons name="heart-outline" size={26} color={"#fff"}></Ionicons>
+          <TouchableOpacity style={styles.likeButton}>
+            <Ionicons name="heart-outline" size={26} color={"#fff"} />
             <View style={styles.likes}>
-              <Text style={{
-                  fontFamily: "mon-sb",
-                  fontSize: 14,
-                  textAlignVertical: "center",
-                  textAlign: "center",
-                }}>{item.likes}</Text>
+              <Text style={styles.likeText}>{item.likes}</Text>
             </View>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={{
-              position: "absolute",
-              left: 30,
-              top: 30,
-              alignItems: "center",
-            }}
-          >
+          <TouchableOpacity style={styles.chefButton}>
             <View style={styles.chef}>
-              <Text
-                style={{
-                  fontFamily: "mon-sb",
-                  fontSize: 14,
-                  textAlignVertical: "center",
-                  padding: 7,
-                  width: "auto",
-                }}
-              >
-                {item.chef}
-              </Text>
+              <Text style={styles.chefText}>{item.userID}</Text>
             </View>
           </TouchableOpacity>
           <View style={styles.recipeNameContainer}>
-            <Text style={styles.recipeName}>{item.name}</Text>
+            <Text style={styles.recipeName}>{item.title}</Text>
           </View>
           <View style={styles.infoContainer}>
-            <Ionicons
-              name="time-outline"
-              size={20}
-              color={Colors.dark}
-            ></Ionicons>
+            <Ionicons name="time-outline" size={20} color={Colors.dark} />
             <Text style={styles.infoText}>{item.cookingTime} min</Text>
             <Text style={styles.divider}></Text>
-            <MaterialCommunityIcons
-              name="pot-steam-outline"
-              size={20}
-              color="black"
-            />
+            <MaterialCommunityIcons name="pot-steam-outline" size={20} color="black" />
             <Text style={styles.infoText}>{item.difficulty}</Text>
             <Text style={styles.divider}></Text>
-            <Ionicons
-              name="flame-outline"
-              size={20}
-              color={Colors.dark}
-            ></Ionicons>
+            <Ionicons name="flame-outline" size={20} color={Colors.dark} />
             <Text style={styles.infoText}>{item.calories}</Text>
           </View>
         </View>
@@ -121,11 +65,7 @@ const Recipes = ({ recipes: items }: Props) => {
 
   return (
     <View style={defaultStyles.container}>
-      <FlatList
-        data={recipes}
-        renderItem={renderRow}
-        ref={recipeRef}
-      />
+      <FlatList data={recipes} renderItem={renderRow} ref={recipeRef} />
     </View>
   );
 };
@@ -196,14 +136,37 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     width: 40,
     textAlign: "center",
-    verticalAlign: "middle",
     borderRadius: 12,
     marginTop: 5,
+  },
+  likeText: {
+    fontFamily: "mon-sb",
+    fontSize: 14,
+    textAlignVertical: "center",
+    textAlign: "center",
+  },
+  chefButton: {
+    position: "absolute",
+    left: 30,
+    top: 30,
+    alignItems: "center",
+  },
+  likeButton: {
+    position: "absolute",
+    right: 30,
+    top: 30,
+    alignItems: "center",
   },
   chef: {
     backgroundColor: "#fff",
     textAlign: "center",
-    verticalAlign: "middle",
     borderRadius: 14,
+  },
+  chefText: {
+    fontFamily: "mon-sb",
+    fontSize: 14,
+    textAlignVertical: "center",
+    padding: 7,
+    width: "auto",
   },
 });

@@ -5,32 +5,47 @@ import {
   Dimensions,
   TouchableOpacity,
   Share,
+  ActivityIndicator,
 } from "react-native";
+import Animated, {
+  SlideInDown,
+  interpolate,
+  useAnimatedStyle,
+  useScrollViewOffset,
+  useAnimatedRef,
+} from "react-native-reanimated";
 import React, { useLayoutEffect } from "react";
 import { Link, useLocalSearchParams, useNavigation } from "expo-router";
-import recipeData from "@/assets/data/recipes.json";
-import Animated, { SlideInDown, interpolate, useAnimatedRef, useAnimatedStyle, useScrollViewOffset } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { defaultStyles } from "@/constants/Styles";
+import { useRecipe } from "@/api/recipes";
+
 const IMG_HEIGHT = 300;
 const { width } = Dimensions.get("window");
 
 const Page = () => {
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const recipe = (recipeData as any[]).find((item) => item.id === id);
-  const [expanded, setExpanded] = React.useState(false);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
+
+  const { id: idString } = useLocalSearchParams();
+
+  const id = idString
+    ? parseFloat(Array.isArray(idString) ? idString[0] : idString)
+    : NaN;
+
+  const { data: recipe, error, isLoading } = useRecipe(id);
+
+  const [expanded, setExpanded] = React.useState(false);
   const navigation = useNavigation();
   const scrollOffset = useScrollViewOffset(scrollRef);
 
   const shareRecipe = async () => {
     try {
       await Share.share({
-        title: recipe.name,
-        url: recipe.recipe_url,
-        message: `Check out this recipe: ${recipe.name}`,
+        title: recipe.title,
+        // url: recipe.recipe_url,
+        message: `Check out this recipe: ${recipe.title}`,
       });
     } catch (error) {
       console.error(error);
@@ -40,16 +55,19 @@ const Page = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerBackground: () => (
-        <Animated.View style={[styles.header, headerAnimatedStyle]}/>
+        <Animated.View style={[styles.header, headerAnimatedStyle]} />
       ),
       headerRight: () => (
-            <TouchableOpacity style={styles.roundButton} onPress={shareRecipe}>
-              <Ionicons name="share-social-outline" size={22} color={'#fff'} />
-            </TouchableOpacity>
+        <TouchableOpacity style={styles.roundButton} onPress={shareRecipe}>
+          <Ionicons name="share-social-outline" size={22} color={"#fff"} />
+        </TouchableOpacity>
       ),
       headerLeft: () => (
-        <TouchableOpacity style={styles.roundButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={24} color={'#fff'} />
+        <TouchableOpacity
+          style={styles.roundButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="chevron-back" size={24} color={"#fff"} />
         </TouchableOpacity>
       ),
     });
@@ -57,27 +75,27 @@ const Page = () => {
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
-      opacity: interpolate(scrollOffset.value, [0, IMG_HEIGHT/1.5], [0, 1])
-    }
+      opacity: interpolate(scrollOffset.value, [0, IMG_HEIGHT / 1.5], [0, 1]),
+    };
   });
 
   const imageAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        { 
+        {
           translateY: interpolate(
             scrollOffset.value,
             [-IMG_HEIGHT, 0, IMG_HEIGHT],
             [-IMG_HEIGHT / 2, 0, IMG_HEIGHT * 0.75]
-          )
+          ),
         },
         {
           scale: interpolate(
             scrollOffset.value,
             [-IMG_HEIGHT, 0, IMG_HEIGHT],
             [2, 1, 1]
-          )
-        }
+          ),
+        },
       ],
     };
   });
@@ -86,13 +104,27 @@ const Page = () => {
     setExpanded(!expanded);
   };
 
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
+
+  if (error || !recipe) {
+    return <Text>Failed to fetch product</Text>;
+  }
+
   return (
     <View style={styles.container}>
-      <Animated.ScrollView ref={scrollRef} contentContainerStyle={{paddingBottom: 100}}
-      scrollEventThrottle={16}>
-        <Animated.Image source={{ uri: recipe.image }} style={[styles.image, imageAnimatedStyle]} />
-        <View style={{ flex: 1, backgroundColor: '#fff' }}>
-          <Text style={styles.recipeName}>{recipe.name}</Text>
+      <Animated.ScrollView
+        ref={scrollRef}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        scrollEventThrottle={16}
+      >
+        <Animated.Image
+          source={{ uri: recipe.image }}
+          style={[styles.image, imageAnimatedStyle]}
+        />
+        <View style={{ flex: 1, backgroundColor: "#fff" }}>
+          <Text style={styles.recipeName}>{recipe.title}</Text>
           <View
             style={{
               position: "absolute",
@@ -167,7 +199,7 @@ const Page = () => {
           </TouchableOpacity>
 
           <View style={styles.chef}>
-          {/* <Image source={{ uri: user?.imageUrl }} style={styles.profileImage} /> */}
+            {/* <Image source={{ uri: user?.imageUrl }} style={styles.profileImage} /> */}
             <Text
               style={{
                 fontFamily: "mon-sb",
@@ -178,7 +210,7 @@ const Page = () => {
                 width: "auto",
               }}
             >
-              {recipe.chef}
+              {recipe.userID}
             </Text>
             <TouchableOpacity style={styles.btnOutline}>
               <Ionicons
@@ -203,7 +235,7 @@ const Page = () => {
               size={20}
               color={Colors.dark}
             ></Ionicons>
-            <Text style={styles.infoText}>{recipe.time}</Text>
+            <Text style={styles.infoText}>{recipe.cookingTime} min</Text>
             <Text style={styles.vDivider}></Text>
             <MaterialCommunityIcons
               name="pot-steam-outline"
@@ -217,7 +249,7 @@ const Page = () => {
               size={20}
               color={Colors.dark}
             ></Ionicons>
-            <Text style={styles.infoText}>{recipe.calories}</Text>
+            <Text style={styles.infoText}>{recipe.calories} 540</Text>
           </View>
           <View style={styles.stats}>
             <View style={styles.statsIndiv}>
@@ -258,7 +290,7 @@ const Page = () => {
             alignItems: "center",
           }}
         >
-          <Link href={'/(modals)/instructions'} asChild>
+          <Link href={`/instructions?id=${id}`} asChild>
             <TouchableOpacity style={styles.btnGo}>
               <Text style={defaultStyles.btnText}>Instructions</Text>
               <Ionicons
@@ -268,7 +300,7 @@ const Page = () => {
               ></Ionicons>
             </TouchableOpacity>
           </Link>
-          <Link href={'/(modals)/ingredients'} asChild>
+          <Link href={`/ingredients?id=${id}`} asChild>
             <TouchableOpacity style={styles.btnGo}>
               <Text style={defaultStyles.btnText}>Ingredients</Text>
               <Ionicons
@@ -285,6 +317,7 @@ const Page = () => {
 };
 
 export default Page;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -297,7 +330,7 @@ const styles = StyleSheet.create({
   image: {
     height: IMG_HEIGHT,
     width,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   recipeName: {
     fontFamily: "mon-b",
@@ -397,17 +430,16 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 50,
     backgroundColor: Colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    color: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    color: "#fff",
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#fff',
+    borderColor: "#fff",
   },
   header: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     height: 100,
     borderBottomColor: Colors.grey,
     borderWidth: StyleSheet.hairlineWidth,
-
-  }
+  },
 });

@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   View,
   Text,
@@ -17,8 +17,13 @@ import * as ImagePicker from "expo-image-picker";
 import Animated from "react-native-reanimated";
 import { Picker } from "@react-native-picker/picker";
 import { set } from "mongoose";
+import { useInsertRecipe } from "@/api/recipes";
+import { parse } from "@babel/core";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/providers/AuthProvider";
 
 const UploadRecipe = () => {
+  const { session, loading } = useAuth();
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -27,6 +32,10 @@ const UploadRecipe = () => {
   const [preparationTime, setPreparationTime] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState();
   const [errors, setErrors] = useState('');
+
+  const [userID, setUserID] = useState<string | null>(null);
+  
+
 
   const resetForm = () => {
     setTitle('');
@@ -78,8 +87,32 @@ const UploadRecipe = () => {
     if (!validateForm()){
       return;
     }
+    if (!session || !session.user || !session.user.id) {
+      console.error("User not authenticated");
+      return;
+    }
+    
+    const userID = session.user.id;
+
     console.warn('Uploaded recipe with title: ', title);
-    resetForm();
+    insertRecipe({
+      title,
+      userID,
+      description,
+      image: imageUri,
+      ingredients,
+      instructions,
+      difficulty: selectedDifficulty,
+      cookingTime: Number(preparationTime),
+    }, {
+      onSuccess: () => {
+        Alert.alert('Recipe uploaded successfully');
+        resetForm();
+      },
+      onError: (error) => {
+        Alert.alert('Error uploading recipe', error.message);
+      }
+    });
 
   };
 
@@ -101,6 +134,8 @@ const UploadRecipe = () => {
       setImageUri(result.assets[0].uri);
     }
   };
+
+  const { mutate: insertRecipe } = useInsertRecipe();
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
