@@ -42,7 +42,7 @@ const Recipes = () => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.chefButton}>
             <View style={styles.chef}>
-              <Text style={styles.chefText}>{item.userID}</Text>
+              <Text style={styles.chefText}>{item.full_name}</Text>
             </View>
           </TouchableOpacity>
           <View style={styles.recipeNameContainer}>

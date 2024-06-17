@@ -210,7 +210,7 @@ const Page = () => {
                 width: "auto",
               }}
             >
-              {recipe.userID}
+              {recipe.full_name}
             </Text>
             <TouchableOpacity style={styles.btnOutline}>
               <Ionicons

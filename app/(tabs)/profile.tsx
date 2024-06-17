@@ -5,33 +5,19 @@ import { defaultStyles } from "@/constants/Styles";
 import ProfileHeader from "@/components/ProfileHeader";
 import { Link, Stack, useRouter } from "expo-router";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/providers/AuthProvider";
 
 const profile = () => {
   const router = useRouter();
-  // const [firstName, setFirstName] = useState(user?.firstName);
-  // const [lastName, setLastName] = useState(user?.lastName);
+  const { profile, loading } = useAuth(); 
 
-  // const onSaveUser = async () => {
-  //   try {
-  //     await user?.update({
-  //       firstName: firstName!,
-  //       lastName: lastName!,
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // const { signOut } = useAuth();
-
-  // const doLogout = () => {
-  //   signOut();
-  // };
-
-  // const { isSignedIn } = useAuth();
-  const doLogout = () => {
-    router.push("register");
-  };
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -43,7 +29,7 @@ const profile = () => {
 
       <Image source={{ uri: 'https://avatar.iran.liara.run/public/boy?username=Ash' }} style={styles.profileImage} />
       <Text style={{ textAlign: "center", fontFamily: "mon-sb", fontSize: 24 }}>
-        Benjamin Dlakic
+       Hello, {profile?.full_name}!
       </Text>
 
       <View style={styles.statsContainer}>

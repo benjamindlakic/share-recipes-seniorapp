@@ -6,12 +6,14 @@ type AuthData = {
     session: Session | null;
     profile: any;
     loading: boolean;
+    setSession: (session: Session | null) => void; // Add setSession to AuthData type
 };
 
 const AuthContext = createContext<AuthData>({
     session: null,
     profile: null,
     loading: true,
+    setSession: () => {}, // Default implementation for setSession
 });
 
 export default function AuthProvider({ children }: PropsWithChildren) {
@@ -19,9 +21,9 @@ export default function AuthProvider({ children }: PropsWithChildren) {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {  
+    useEffect(() => {
         const fetchSession = async () => {
-            const { data: { session }, } = await supabase.auth.getSession();
+            const { data: { session } } = await supabase.auth.getSession();
             setSession(session);
             setLoading(false);
 
@@ -33,7 +35,7 @@ export default function AuthProvider({ children }: PropsWithChildren) {
                   .eq('id', session.user.id)
                   .single();
                 setProfile(data || null);
-              }
+            }
         };
 
         fetchSession();
@@ -42,9 +44,11 @@ export default function AuthProvider({ children }: PropsWithChildren) {
         });
     }, []);
 
-    console.log(profile);
-
-    return <AuthContext.Provider value={{session, profile, loading}}>{children}</AuthContext.Provider>;
+    return (
+        <AuthContext.Provider value={{ session, profile, loading, setSession }}>
+            {children}
+        </AuthContext.Provider>
+    );
 }
 
 export const useAuth = () => useContext(AuthContext);

@@ -11,58 +11,83 @@ import { useState } from "react";
 import { Link, Stack, router } from "expo-router";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
-import { Ionicons } from "@expo/vector-icons";
-import { supabase } from '@/lib/supabase';
+import { supabase } from "@/lib/supabase";
 
 const register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [full_name, setFullname] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function signUpWithEmail(){
-	setLoading(true);
-	const { error } = await supabase.auth.signUp({ email, password  });
+  async function signUpWithEmail() {
+    setLoading(true);
+    const { error } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        data: {
+          full_name,
+          username
+        },
+      },
+    });
 
-	if (error) Alert.alert(error.message);
-	setLoading(false);
+    if (error) Alert.alert(error.message);
+    setLoading(false);
   }
 
-return (
-	<View style={styles.container}>
-		<Stack.Screen
-			options={{
-				title: "Create your account",
-				headerTitleStyle: { fontFamily: "mon-sb" },
-				headerLeft: () => (
-					<></>
-				),
-			}}
-		/>
-		<TextInput
-			autoCapitalize="none"
-			placeholder="example@example.com"
-			value={email}
-			onChangeText={setEmail}
-			style={[defaultStyles.inputField, { marginBottom: 20 }]}
-		/>
-		<TextInput
-			placeholder="Password"
-			value={password}
-			onChangeText={setPassword}
-			secureTextEntry
-			style={[defaultStyles.inputField, { marginBottom: 20 }]}
-		/>
+  return (
+    <View style={styles.container}>
+      <Stack.Screen
+        options={{
+          title: "Create your account",
+          headerTitleStyle: { fontFamily: "mon-sb" },
+          headerLeft: () => <></>,
+        }}
+      />
+      <TextInput
+        placeholder="Full Name"
+        value={full_name}
+        onChangeText={setFullname}
+        style={[defaultStyles.inputField, { marginBottom: 20 }]}
+      />
+      <TextInput
+        autoCapitalize="none"
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
+        style={[defaultStyles.inputField, { marginBottom: 20 }]}
+      />
+      <TextInput
+        autoCapitalize="none"
+        placeholder="example@example.com"
+        value={email}
+        onChangeText={setEmail}
+        style={[defaultStyles.inputField, { marginBottom: 20 }]}
+      />
+      <TextInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        style={[defaultStyles.inputField, { marginBottom: 20 }]}
+      />
 
-		<TouchableOpacity style={defaultStyles.btn} disabled={loading} onPress={signUpWithEmail}>
-			<Text style={defaultStyles.btnText}>Sign Up</Text>
-		</TouchableOpacity>
-		<Link href="/(auth)/login" asChild>
-			<TouchableOpacity style={{ marginTop: 10 }}>
-				<Text style={styles.textBtn}>Already have an account? Login</Text>
-			</TouchableOpacity>
-		</Link>
-	</View>
-);
+      <TouchableOpacity
+        style={defaultStyles.btn}
+        disabled={loading}
+        onPress={signUpWithEmail}
+      >
+        <Text style={defaultStyles.btnText}>Sign Up</Text>
+      </TouchableOpacity>
+      <Link href="/(auth)/login" asChild>
+        <TouchableOpacity style={{ marginTop: 10 }}>
+          <Text style={styles.textBtn}>Already have an account? Login</Text>
+        </TouchableOpacity>
+      </Link>
+    </View>
+  );
 };
 
 export default register;

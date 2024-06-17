@@ -8,7 +8,7 @@ import {
   Image,
   Alert,
 } from "react-native";
-import { Stack, useNavigation } from "expo-router";
+import { Stack, useNavigation, useRouter } from "expo-router";
 import AddHeader from "@/components/AddHeader";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
@@ -31,11 +31,8 @@ const UploadRecipe = () => {
   const [instructions, setInstructions] = useState('');
   const [preparationTime, setPreparationTime] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState();
-  const [errors, setErrors] = useState('');
-
-  const [userID, setUserID] = useState<string | null>(null);
-  
-
+  const [errors, setErrors] = useState('');  
+  const router = useRouter();
 
   const resetForm = () => {
     setTitle('');
@@ -82,7 +79,7 @@ const UploadRecipe = () => {
     }
     return true;
   }
-    
+  
   const handleSavePress = () => {
     if (!validateForm()){
       return;
@@ -91,7 +88,7 @@ const UploadRecipe = () => {
       console.error("User not authenticated");
       return;
     }
-    
+
     const userID = session.user.id;
 
     console.warn('Uploaded recipe with title: ', title);
@@ -106,12 +103,9 @@ const UploadRecipe = () => {
       cookingTime: Number(preparationTime),
     }, {
       onSuccess: () => {
-        Alert.alert('Recipe uploaded successfully');
         resetForm();
+        router.back();
       },
-      onError: (error) => {
-        Alert.alert('Error uploading recipe', error.message);
-      }
     });
 
   };
@@ -250,9 +244,9 @@ const UploadRecipe = () => {
                 setSelectedDifficulty(itemValue)
               }
             >
-              <Picker.Item label="Easy" value="easy" />
-              <Picker.Item label="Medium" value="medium" />
-              <Picker.Item label="Hard" value="hard" />
+              <Picker.Item label="Easy" value="Easy" />
+              <Picker.Item label="Medium" value="Medium" />
+              <Picker.Item label="Hard" value="Hard" />
             </Picker>
           </View>
           <Text style={{color: 'red', textAlign: 'center', fontFamily: 'mon-r', margin: 5}}>{errors}</Text>

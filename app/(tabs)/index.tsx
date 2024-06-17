@@ -8,7 +8,6 @@ import { useAuth } from '@/providers/AuthProvider';
 
 
 const Page = () => {
-    const items = useMemo(() => recipesData as any, []);
     const { session, loading } = useAuth();
 
     if(loading){
@@ -27,7 +26,7 @@ const Page = () => {
             }}
             />
             <View style={{flex: 1, marginTop: 20}}>
-                <Recipes recipes={items}/>
+                <Recipes/>
             </View>
             
         </View>
