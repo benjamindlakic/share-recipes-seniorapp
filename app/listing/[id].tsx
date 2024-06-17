@@ -13,6 +13,7 @@ import Animated, {
   useAnimatedStyle,
   useScrollViewOffset,
   useAnimatedRef,
+  useSharedValue,
 } from "react-native-reanimated";
 import React, { useLayoutEffect } from "react";
 import { Link, useLocalSearchParams, useNavigation } from "expo-router";
@@ -38,7 +39,7 @@ const Page = () => {
 
   const [expanded, setExpanded] = React.useState(false);
   const navigation = useNavigation();
-  const scrollOffset = useScrollViewOffset(scrollRef);
+  const scrollOffset = useSharedValue(0);
 
   const shareRecipe = async () => {
     try {

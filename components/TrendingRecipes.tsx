@@ -1,39 +1,46 @@
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
   FlatList,
-  ListRenderItem,
   TouchableOpacity,
   StyleSheet,
   Image,
 } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
-import { defaultStyles } from "@/constants/Styles";
 import { Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-interface Props {
-  recipes: any[];
+interface Recipe {
+  id: string;
+  image: string;
+  likes: number;
+  title: string;
+  cookingTime: number;
+  difficulty: string;
 }
-const Recipes = ({ recipes: items }: Props) => {
+
+interface Props {
+  recipes?: Recipe[];
+}
+
+const Recipes = ({ recipes = [] }: Props) => {
   const [loading, setLoading] = useState(false);
   const recipeRef = useRef<FlatList>(null);
 
   useEffect(() => {
-    console.log("dadada", items.length);
     setLoading(true);
 
     setTimeout(() => {
       setLoading(false);
     }, 200);
-  }, [items]);
+  }, [recipes]);
 
-  const renderRow: ListRenderItem<any> = ({ item }) => (
+  const renderRow = ({ item }: { item: any}) => (
     <Link href={`/listing/${item.id}`} asChild>
-      <TouchableOpacity >
-        <View style={[styles.recipes,{marginHorizontal: -30, marginLeft: 0,}]}>
+      <TouchableOpacity>
+        <View style={[styles.recipes, { marginHorizontal: -30, marginLeft: 0 }]}>
           <Image source={{ uri: item.image }} style={styles.image} />
           <TouchableOpacity
             style={{
@@ -45,28 +52,17 @@ const Recipes = ({ recipes: items }: Props) => {
           >
             <Ionicons name="heart-outline" size={26} color={"#fff"}></Ionicons>
             <View style={styles.likes}>
-              <Text
-                style={{
-                  fontFamily: "mon-sb",
-                  fontSize: 14,
-                  textAlignVertical: "center",
-                  textAlign: "center",
-                }}
-              >
+              <Text style={{ fontFamily: "mon-sb", fontSize: 14 }}>
                 {item.likes}
               </Text>
             </View>
           </TouchableOpacity>
           <View style={styles.infoContainer}>
-            <Text style={{fontFamily: 'mon-sb', fontSize: 14, textAlign: 'center', verticalAlign:'top', textAlignVertical:'top', bottom: 10}}>{item.name}</Text>
+            <Text style={{fontFamily: 'mon-sb', fontSize: 14, textAlign: 'center', verticalAlign:'top', textAlignVertical:'top', bottom: 10}}>{item.title}</Text>
 
             <View style={{ justifyContent: "space-evenly", flexDirection: "row", padding: 0, bottom: 3, alignItems:'center'}}>
-              <Ionicons
-                name="time-outline"
-                size={20}
-                color={Colors.dark}
-              ></Ionicons>
-              <Text style={styles.infoText}>{item.time}</Text>
+            <Ionicons name="time-outline" size={20} color={Colors.dark} />
+              <Text style={styles.infoText}>{item.cookingTime} min</Text>
               <Text style={styles.divider}></Text>
               <MaterialCommunityIcons
                 name="pot-steam-outline"
@@ -82,11 +78,11 @@ const Recipes = ({ recipes: items }: Props) => {
   );
 
   return (
-    <View style={defaultStyles.container}>
+    <View style={styles.container}>
       <FlatList
         renderItem={renderRow}
         ref={recipeRef}
-        data={loading ? [] : items}
+        data={loading ? [] : recipes}
         horizontal={true}
       />
     </View>
@@ -96,6 +92,11 @@ const Recipes = ({ recipes: items }: Props) => {
 export default Recipes;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   recipes: {
     height: 250,
     width: 250,
@@ -115,7 +116,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     width: 40,
     textAlign: "center",
-    verticalAlign: "middle",
     borderRadius: 12,
     marginTop: 3,
   },
@@ -127,7 +127,6 @@ const styles = StyleSheet.create({
     bottom: 5,
     left: 16,
     padding: 5,
-    height: 'auto',
     width: 200,
     elevation: 2,
     shadowColor: "#000",
@@ -139,7 +138,7 @@ const styles = StyleSheet.create({
     },
   },
   infoText: {
-    textAlign: "center",
+    marginLeft: 5,
     fontFamily: "mon-sb",
     fontSize: 12,
     color: Colors.dark,

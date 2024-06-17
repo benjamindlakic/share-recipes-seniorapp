@@ -1,17 +1,15 @@
 import ExploreHeader from "@/components/ExploreHeader";
-import Listings from "@/components/Recipes";
 import { Stack } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, ScrollView, Image, StyleSheet } from "react-native";
 import Recipes from "@/components/TrendingRecipes";
-import recipesData from "@/assets/data/recipes.json";
 import Animated from "react-native-reanimated";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
+import { useRecipeList } from "@/api/recipes";
 
 const Page = () => {
-  // const { user } = useUser();
-  const items = useMemo(() => recipesData as any, []);
+  const { data: items, error, isLoading } = useRecipeList();  
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
