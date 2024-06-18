@@ -5,10 +5,12 @@ export const useRecipeList = () => {
   return useQuery({
     queryKey: ["recipes"],
     queryFn: async () => {
-      // Fetch recipes
+      // Fetch recipes ordered by creation date (most recent first)
       const { data: recipes, error: recipesError } = await supabase
         .from("recipes")
-        .select("*");
+        .select("*")
+        .order("created_at", { ascending: false });
+
       if (recipesError) {
         throw new Error(recipesError.message);
       }
@@ -143,11 +145,9 @@ export const useLikeRecipe = () => {
       }
     },
     onSuccess: () => {
-      console.log('Mutation succeeded');
       queryClient.invalidateQueries({queryKey: ["recipes"]});
     },
     onError: (error) => {
-      console.error('Mutation failed:', error);
     },
   });
 };
@@ -176,6 +176,45 @@ export const useInsertRecipe = () => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({queryKey: ["recipes"]});
+    },
+  });
+};
+
+
+// FOLLOW
+
+interface FollowUserParams {
+  follower_id: string; // Current user ID
+  following_id: string; // Recipe creator user ID
+  followed: boolean;
+}
+
+export const useFollowUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ follower_id, following_id, followed }: FollowUserParams) => {
+      try {
+        if (followed) {
+          // Unfollow the user who created the recipe
+          await supabase
+            .from('follows')
+            .delete()
+            .eq('follower_id', follower_id)
+            .eq('following_id', following_id);
+        } else {
+          // Follow the user who created the recipe
+          await supabase.from('follows').insert({
+            follower_id,
+            following_id,
+          });
+        }
+        // Invalidate relevant queries after mutation
+        queryClient.invalidateQueries({queryKey:['user', following_id]}); // Example query invalidation
+      } catch (error) {
+        console.error('Error following user:', error);
+        throw new Error('Failed to follow/unfollow user');
+      }
     },
   });
 };
