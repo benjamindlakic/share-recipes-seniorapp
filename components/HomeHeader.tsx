@@ -7,37 +7,23 @@ import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 
 const HomeHeader = () => {
-  const [active, setActive] = useState(0);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
         <View style={styles.actionRow}>
-          <TouchableOpacity onPress={() => setActive(0)}>
+          <TouchableOpacity>
             <Text
               style={{
-                fontFamily: active === 0 ? "mon-sb" : "mon",
-                fontSize: 15,
-                color: active === 0 ? "#000" : Colors.grey,
+                fontFamily: "mon-sb",
+                fontSize: 18,
+                color: "#000",
               }}
             >
               Recipes For You
             </Text>
           </TouchableOpacity>
-          <View>
-            <Text style={styles.divider}></Text>
-          </View>
-          <TouchableOpacity onPress={() => setActive(1)}>
-            <Text
-              style={{
-                fontFamily: active === 1 ? "mon-sb" : "mon",
-                fontSize: 15,
-                color: active === 1 ? "#000" : Colors.grey,
-              }}
-            >
-              Following Chefs
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.underline} />
         </View>
       </View>
     </SafeAreaView>
@@ -57,9 +43,11 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     gap: 25,
   },
-  divider: {
-    width: 1,
-    height: 20,
+  underline: {
+    position: 'absolute',
+    bottom: -10,
+    height: 2,
+    width: '10%',
     backgroundColor: Colors.primary,
   },
 });

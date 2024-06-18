@@ -16,7 +16,6 @@ import { supabase } from "@/lib/supabase";
 const register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
   const [full_name, setFullname] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -28,7 +27,6 @@ const register = () => {
       options: {
         data: {
           full_name,
-          username
         },
       },
     });
@@ -50,13 +48,6 @@ const register = () => {
         placeholder="Full Name"
         value={full_name}
         onChangeText={setFullname}
-        style={[defaultStyles.inputField, { marginBottom: 20 }]}
-      />
-      <TextInput
-        autoCapitalize="none"
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
         style={[defaultStyles.inputField, { marginBottom: 20 }]}
       />
       <TextInput

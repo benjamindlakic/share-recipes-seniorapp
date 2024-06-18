@@ -42,21 +42,6 @@ const Recipes = ({ recipes = [] }: Props) => {
       <TouchableOpacity>
         <View style={[styles.recipes, { marginHorizontal: -30, marginLeft: 0 }]}>
           <Image source={{ uri: item.image }} style={styles.image} />
-          <TouchableOpacity
-            style={{
-              position: "absolute",
-              right: 40,
-              top: 25,
-              alignItems: "center",
-            }}
-          >
-            <Ionicons name="heart-outline" size={26} color={"#fff"}></Ionicons>
-            <View style={styles.likes}>
-              <Text style={{ fontFamily: "mon-sb", fontSize: 14 }}>
-                {item.likes}
-              </Text>
-            </View>
-          </TouchableOpacity>
           <View style={styles.infoContainer}>
             <Text style={{fontFamily: 'mon-sb', fontSize: 14, textAlign: 'center', verticalAlign:'top', textAlignVertical:'top', bottom: 10}}>{item.title}</Text>
 

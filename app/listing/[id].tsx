@@ -21,7 +21,8 @@ import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { defaultStyles } from "@/constants/Styles";
-import { useRecipe } from "@/api/recipes";
+import { useLikeRecipe, useRecipe } from "@/api/recipes";
+import { useAuth } from "@/providers/AuthProvider";
 
 const IMG_HEIGHT = 300;
 const { width } = Dimensions.get("window");
@@ -30,16 +31,37 @@ const Page = () => {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
 
   const { id: idString } = useLocalSearchParams();
+  const { session } = useAuth();
+  const user_id = session?.user?.id ?? "";
 
   const id = idString
     ? parseFloat(Array.isArray(idString) ? idString[0] : idString)
     : NaN;
 
-  const { data: recipe, error, isLoading } = useRecipe(id);
+  const { data: recipe, error, isLoading } = useRecipe(id, user_id);
 
   const [expanded, setExpanded] = React.useState(false);
   const navigation = useNavigation();
   const scrollOffset = useSharedValue(0);
+
+  const likeRecipe = useLikeRecipe();
+
+  const handleLike = () => {
+    if (session && session.user && recipe) {
+      likeRecipe.mutate({
+        user_id,
+        recipe_id: id,
+        liked: recipe.likedByCurrentUser,
+      });
+      console.log("Mutation called:", {
+        user_id,
+        recipe_id: id,
+        liked: recipe.likedByCurrentUser,
+      });
+    } else {
+      console.log("Session or recipe is undefined");
+    }
+  };
 
   const shareRecipe = async () => {
     try {
@@ -135,13 +157,13 @@ const Page = () => {
               width: 50,
             }}
           >
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleLike}>
               <Ionicons
-                name="heart-outline"
+                name={recipe.likedByCurrentUser ? "heart" : "heart-outline"}
                 size={30}
-                color={"#000"}
+                color={recipe.likedByCurrentUser ? "red" : "#000"}
                 style={{ marginTop: 5, textAlign: "center" }}
-              ></Ionicons>
+              />
               <Text
                 style={{ fontFamily: "mon", fontSize: 14, textAlign: "center" }}
               >

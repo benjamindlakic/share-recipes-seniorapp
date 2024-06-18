@@ -1,10 +1,7 @@
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/providers/AuthProvider";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useRecipeList = () => {
-  const { session } = useAuth();
-
   return useQuery({
     queryKey: ["recipes"],
     queryFn: async () => {
@@ -46,7 +43,7 @@ export const useRecipeList = () => {
   });
 };
 
-export const useRecipe = (recipeId: number) => {
+export const useRecipe = (recipeId: number, userId: string) => {
   return useQuery({
     queryKey: ["recipe", recipeId],
     queryFn: async () => {
@@ -72,10 +69,18 @@ export const useRecipe = (recipeId: number) => {
         throw new Error(userError.message);
       }
 
-      // Add full_name to the recipe
+      // Check if the current user has liked the recipe
+      const { data: like, error: likeError } = await supabase
+        .from("likes")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("recipe_id", recipeId)
+        .single();
+
       const recipeWithUserName = {
         ...recipe,
         full_name: user.full_name,
+        likedByCurrentUser: !!like,
       };
 
       return recipeWithUserName;
@@ -83,7 +88,72 @@ export const useRecipe = (recipeId: number) => {
   });
 };
 
+interface LikeRecipeParams {
+  user_id: string;
+  recipe_id: number;
+  liked: boolean;
+}
+
+export const useLikeRecipe = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ user_id, recipe_id, liked }: LikeRecipeParams) => {
+      try {
+        if (liked) {
+          // Unlike the recipe
+          await supabase
+            .from('likes')
+            .delete()
+            .eq('user_id', user_id)
+            .eq('recipe_id', recipe_id);
+        } else {
+          // Like the recipe
+          await supabase.from('likes').insert({
+            user_id,
+            recipe_id,
+            liked: true,
+          });
+        }
+
+        // Fetch updated likes count from recipes table
+        const { data: recipeData, error: recipeError } = await supabase
+          .from('recipes')
+          .select('likes')
+          .eq('id', recipe_id)
+          .single();
+
+        if (recipeError) {
+          throw new Error(recipeError.message);
+        }
+
+        const currentLikes = recipeData.likes || 0;
+        const newLikes = liked ? currentLikes - 1 : currentLikes + 1;
+
+        // Update likes count in recipes table
+        await supabase
+          .from('recipes')
+          .update({ likes: newLikes })
+          .eq('id', recipe_id);
+
+        // Invalidate the recipe query to refetch updated data
+        queryClient.invalidateQueries({queryKey:['recipe', recipe_id]});
+      } catch (error) {
+        
+      }
+    },
+    onSuccess: () => {
+      console.log('Mutation succeeded');
+      queryClient.invalidateQueries({queryKey: ["recipes"]});
+    },
+    onError: (error) => {
+      console.error('Mutation failed:', error);
+    },
+  });
+};
+
 export const useInsertRecipe = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     async mutationFn(data: any) {
       const { error, data: newRecipe } = await supabase
@@ -103,6 +173,9 @@ export const useInsertRecipe = () => {
         throw new Error(error.message);
       }
       return newRecipe;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({queryKey: ["recipes"]});
     },
   });
 };

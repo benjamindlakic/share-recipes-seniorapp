@@ -34,12 +34,6 @@ const Recipes = () => {
       <TouchableOpacity>
         <View style={styles.recipes}>
           <Image source={{ uri: item.image }} style={styles.image} />
-          <TouchableOpacity style={styles.likeButton}>
-            <Ionicons name="heart-outline" size={26} color={"#fff"} />
-            <View style={styles.likes}>
-              <Text style={styles.likeText}>{item.likes}</Text>
-            </View>
-          </TouchableOpacity>
           <TouchableOpacity style={styles.chefButton}>
             <View style={styles.chef}>
               <Text style={styles.chefText}>{item.full_name}</Text>
