@@ -1,19 +1,22 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, TextInput, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import { defaultStyles } from "@/constants/Styles";
 import Animated, { SlideInDown } from "react-native-reanimated";
-import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
-import { Stack } from "expo-router";
-import SearchHeader from "@/components/SearchHeader";
+import { Stack, usePathname } from "expo-router";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { Picker } from "@react-native-picker/picker";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+
 
 const filter = () => {
   const [caloriesValue, setCaloriesValue] = React.useState([0, 2000]);
   const [cookingValue, setCookingValue] = React.useState([0, 180]);
   const [selectedDifficulty, setSelectedDifficulty] = useState();
 
+  const pathname = usePathname();
+  const [query, setQuery] = useState("");
 
 
   const caloriesValuesChange = (
@@ -24,12 +27,40 @@ const filter = () => {
     values: React.SetStateAction<number[]>
   ) => setCookingValue(values);
 
-
   return (
     <View style={{ flex: 1, paddingTop: 100, backgroundColor: "#fff" }}>
       <Stack.Screen
         options={{
-          header: () => <SearchHeader />,
+          header: () => <SafeAreaView style={{ flex: 1 }}>
+          <View style={styles.container}>
+            <View style={styles.actionRow}>
+              <Ionicons
+                name="chevron-back"
+                size={24}
+                color={Colors.primary}
+                onPress={router.back}
+              />
+              <TouchableOpacity style={styles.searchBtn}>
+                <Ionicons name="search" size={24} color={Colors.primary}></Ionicons>
+                <View>
+                  <TextInput
+                    style={{ fontFamily: "mon-sb", fontSize: 16 }}
+                    placeholder="Try 'chicken', 'avocado'"
+                    value={query}
+                    onChangeText={(e) => setQuery(e)}
+                  ></TextInput>
+                </View>
+              </TouchableOpacity>
+              <Ionicons
+                name="close-circle-outline"
+                size={24}
+                color={Colors.primary}
+                onPress={() => setQuery("")} // Clear text in TextInput
+
+              ></Ionicons>
+            </View>
+          </View>
+        </SafeAreaView>,
         }}
       />
       <Text
@@ -145,7 +176,18 @@ const filter = () => {
         style={[defaultStyles.footer, { backgroundColor: "transparent" }]}
         entering={SlideInDown.delay(200)}
       >
-        <TouchableOpacity style={styles.btnGo}>
+        <TouchableOpacity style={styles.btnGo} 
+        onPress={() => {
+          if(!query){
+            return Alert.alert("Please enter a search query")
+          }
+
+          if(pathname.startsWith("/search")){
+            router.setParams({query})
+          }else{
+            router.push(`/search/${query}`);
+          }
+        }}>
           <Text style={{ fontFamily: "mon-sb", fontSize: 16, color: "#fff" }}>
             Show results
           </Text>
@@ -190,5 +232,40 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "mon",
     fontWeight: "bold",
+  },
+  container: {
+    backgroundColor: "#fff",
+    height: 60,
+  },
+  actionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+    paddingTop: 8,
+    gap: 10,
+  },
+  filterBtn: {
+    padding: 10,
+  },
+  searchBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    borderColor: "#c2c2c2",
+    borderWidth: StyleSheet.hairlineWidth,
+    flex: 1,
+    padding: 5,
+    borderRadius: 30,
+    backgroundColor: "#fff",
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.02,
+    shadowRadius: 8,
+    shadowOffset: {
+      width: 1,
+      height: 1,
+    },
   },
 });

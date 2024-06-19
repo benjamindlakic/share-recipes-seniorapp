@@ -268,3 +268,40 @@ export const useFollowUser = () => {
     },
   });
 };
+
+export const useSearchRecipes = (query: string) => {
+  return useQuery({
+    queryKey: ["searchRecipes", query],
+    queryFn: async () => {
+      // Fetch recipes that match the search query
+      const { data: recipes, error: recipesError } = await supabase
+        .from("recipes")
+        .select("*")
+        .ilike("title", `%${query}%`);
+      if (recipesError) {
+        throw new Error(recipesError.message);
+      }
+      // Extract unique user IDs
+      const userIds = [...new Set(recipes.map((recipe) => recipe.userID))];
+      // Fetch user details for each unique userID
+      const { data: users, error: usersError } = await supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", userIds);
+      if (usersError) {
+        throw new Error(usersError.message);
+      }
+      // Create a map of userID to full_name
+      const userMap: Record<string, string> = users.reduce((acc, user) => {
+        acc[user.id] = user.full_name;
+        return acc;
+      }, {} as Record<string, string>);
+      // Add full_name to each recipe
+      const recipesWithUserNames = recipes.map((recipe) => ({
+        ...recipe,
+        full_name: userMap[recipe.userID],
+      }));
+      return recipesWithUserNames;
+    },
+  });
+};

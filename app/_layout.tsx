@@ -12,6 +12,7 @@ import { TouchableOpacity, View, Text } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import AuthProvider from "@/providers/AuthProvider";
 import QueryProvider from "@/providers/QueryProvider";
+import Colors from "@/constants/Colors";
 
 const tokenCache = {
   async getToken(key: string) {
@@ -115,6 +116,19 @@ function RootLayoutNav() {
             options={{
               headerTransparent: true,
               animation: "fade",
+            }}
+          />
+          <Stack.Screen
+            name="search/[query]"
+            options={{
+              title: `Search`,
+              presentation: "fullScreenModal",
+              headerTitleStyle: { fontFamily: "mon-sb" },
+              headerLeft: () => (
+                <TouchableOpacity onPress={() => router.back()}>
+                  <Ionicons name='chevron-back' size={28} color={Colors.primary} />
+                </TouchableOpacity>
+              ),
             }}
           />
         </Stack>
