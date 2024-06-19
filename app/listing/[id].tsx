@@ -52,7 +52,6 @@ const Page = () => {
   const followUser = useFollowUser();
   
   useEffect(() => {
-    // Fetch initial follow status for the recipe creator
     if (session && session.user && recipe) {
       checkIfFollowing(recipe.userID).then(isFollowing => {
         setFollowed(isFollowing);
@@ -64,7 +63,6 @@ const Page = () => {
 
   const checkIfFollowing = async (userID: any) => {
     try {
-      // Query follows table to check if current user follows userID
       const { data: follows, error } = await supabase
         .from('follows')
         .select('*')
@@ -75,13 +73,12 @@ const Page = () => {
         throw error;
       }
 
-      // Determine if there is a follow relationship
       const isFollowing = follows.length > 0;
 
       return isFollowing;
     } catch (error) {
       console.error('Error checking follow status:', error);
-      return false; // Default to false if there's an error
+      return false;
     }
   };
 
@@ -90,9 +87,15 @@ const Page = () => {
       followUser.mutate({
         follower_id: user_id,
         following_id: recipe.userID,
-        followed: followed, // Toggle follow status
+        followed: followed, 
+      }, {
+        onSuccess: () => {
+          setFollowed(!followed);
+        },
+        onError: (error) => {
+          console.error('Error during follow/unfollow action:', error);
+        }
       });
-      setFollowed(!followed); // Update local state immediately
     } else {
       console.log('Session or recipe is undefined');
     }

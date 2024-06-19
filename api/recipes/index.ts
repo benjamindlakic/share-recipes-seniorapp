@@ -141,13 +141,11 @@ export const useLikeRecipe = () => {
         // Invalidate the recipe query to refetch updated data
         queryClient.invalidateQueries({queryKey:['recipe', recipe_id]});
       } catch (error) {
-        
+        console.error('Error liking/unliking recipe:', error);
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ["recipes"]});
-    },
-    onError: (error) => {
     },
   });
 };
@@ -196,25 +194,77 @@ export const useFollowUser = () => {
     mutationFn: async ({ follower_id, following_id, followed }: FollowUserParams) => {
       try {
         if (followed) {
-          // Unfollow the user who created the recipe
-          await supabase
+
+          const { error: deleteError } = await supabase
             .from('follows')
             .delete()
             .eq('follower_id', follower_id)
             .eq('following_id', following_id);
+
+          if (deleteError) {
+            console.error('Error deleting follow:', deleteError);
+            throw deleteError;
+          }
+
+          const { error: decrementFollowingError } = await supabase.rpc('decrement_following_count', { user_id: follower_id });
+          if (decrementFollowingError) {
+            throw decrementFollowingError;
+          }
+
+          const { error: decrementFollowersError } = await supabase.rpc('decrement_followers_count', { user_id: following_id });
+          if (decrementFollowersError) {
+            console.error('Error decrementing followers count:', decrementFollowersError);
+            throw decrementFollowersError;
+          }
+
         } else {
-          // Follow the user who created the recipe
-          await supabase.from('follows').insert({
+
+          const { error: insertError } = await supabase.from('follows').insert({
             follower_id,
             following_id,
           });
+
+          if (insertError) {
+            console.error('Error inserting follow:', insertError);
+            throw insertError;
+          }
+
+          const { error: incrementFollowingError } = await supabase.rpc('increment_following_count', { user_id: follower_id });
+          if (incrementFollowingError) {
+            throw incrementFollowingError;
+          }
+
+          const { data: currentFollowers, error: currentFollowersError } = await supabase
+            .from('profiles')
+            .select('followers')
+            .eq('id', following_id)
+            .single();
+
+
+          const { data: incrementFollowersData, error: incrementFollowersError } = await supabase.rpc('increment_followers_count', { user_id: following_id });
+
+
+          if (incrementFollowersError) {
+            console.error('Error incrementing followers count:', incrementFollowersError);
+            throw incrementFollowersError;
+          }
+
+          const { data: newFollowers, error: newFollowersError } = await supabase
+            .from('profiles')
+            .select('followers')
+            .eq('id', following_id)
+            .single();
+
         }
-        // Invalidate relevant queries after mutation
-        queryClient.invalidateQueries({queryKey:['user', following_id]}); // Example query invalidation
+
+        queryClient.invalidateQueries({ queryKey: ['profile', following_id] });
+        queryClient.invalidateQueries({ queryKey: ['profile', follower_id] });
       } catch (error) {
-        console.error('Error following user:', error);
-        throw new Error('Failed to follow/unfollow user');
+        console.error('Error following/unfollowing user:', error);
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ["profiles"]});
     },
   });
 };

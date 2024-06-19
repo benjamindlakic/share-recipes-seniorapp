@@ -9,7 +9,7 @@ import { useAuth } from "@/providers/AuthProvider";
 
 const profile = () => {
   const router = useRouter();
-  const { profile, loading } = useAuth(); 
+  const { profile, loading } = useAuth();
 
   if (loading) {
     return (
@@ -27,28 +27,33 @@ const profile = () => {
         }}
       />
 
-      <Image source={{ uri: 'https://avatar.iran.liara.run/public/boy?username=Ash' }} style={styles.profileImage} />
+      <Image
+        source={{
+          uri: "https://avatar.iran.liara.run/public/boy?username=Ash",
+        }}
+        style={styles.profileImage}
+      />
       <Text style={{ textAlign: "center", fontFamily: "mon-sb", fontSize: 24 }}>
-       Hello, {profile?.full_name}!
+        Hello, {profile?.full_name}!
       </Text>
 
       <View style={styles.statsContainer}>
         <View style={styles.stat}>
-          <Text style={styles.statText}>2</Text>
+          <Text style={styles.statText}>{profile?.recipeCount}</Text>
           <Text style={styles.statLabel}>Recipes</Text>
         </View>
         <View style={styles.stat}>
           <Text style={styles.divider}></Text>
         </View>
         <View style={styles.stat}>
-          <Text style={styles.statText}>123</Text>
+          <Text style={styles.statText}>{profile.following}</Text>
           <Text style={styles.statLabel}>Following</Text>
         </View>
         <View style={styles.stat}>
           <Text style={styles.divider}></Text>
         </View>
         <View style={styles.stat}>
-          <Text style={styles.statText}>455</Text>
+          <Text style={styles.statText}>{profile.followers}</Text>
           <Text style={styles.statLabel}>Followers</Text>
         </View>
       </View>
@@ -63,7 +68,10 @@ const profile = () => {
             <Text style={styles.btnOutlineText}>Edit Profile</Text>
           </TouchableOpacity>
         </Link>
-        <TouchableOpacity style={styles.btnOutline} onPress={() => supabase.auth.signOut()} >
+        <TouchableOpacity
+          style={styles.btnOutline}
+          onPress={() => supabase.auth.signOut()}
+        >
           <Text style={styles.btnOutlineText}>Logout</Text>
         </TouchableOpacity>
       </View>

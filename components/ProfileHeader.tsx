@@ -12,11 +12,7 @@ const ProfileHeader = () => {
   return (
     <SafeAreaView style={{flex: 1}}>
         <View style={styles.container}>
-            <View style={styles.actionRow}>
-                <TouchableOpacity style={styles.logoutBtn}>
-                    <Ionicons name='share-social-outline' size={24} color={Colors.primary}></Ionicons>
-                </TouchableOpacity>
-            </View>
+
         </View>
     </SafeAreaView>
   )
