@@ -35,7 +35,6 @@ const Page = () => {
   const { session } = useAuth();
   const user_id = session?.user?.id ?? "";
 
-
   const id = idString
     ? parseFloat(Array.isArray(idString) ? idString[0] : idString)
     : NaN;
@@ -45,29 +44,30 @@ const Page = () => {
   const [expanded, setExpanded] = React.useState(false);
   const navigation = useNavigation();
   const scrollOffset = useSharedValue(0);
-  
 
   const likeRecipe = useLikeRecipe();
   const [followed, setFollowed] = useState(false);
   const followUser = useFollowUser();
-  
+
   useEffect(() => {
     if (session && session.user && recipe) {
-      checkIfFollowing(recipe.userID).then(isFollowing => {
-        setFollowed(isFollowing);
-      }).catch(error => {
-        console.error('Error checking follow status:', error);
-      });
+      checkIfFollowing(recipe.userID)
+        .then((isFollowing) => {
+          setFollowed(isFollowing);
+        })
+        .catch((error) => {
+          console.error("Error checking follow status:", error);
+        });
     }
   }, [session, recipe]);
 
   const checkIfFollowing = async (userID: any) => {
     try {
       const { data: follows, error } = await supabase
-        .from('follows')
-        .select('*')
-        .eq('follower_id', user_id)
-        .eq('following_id', userID);
+        .from("follows")
+        .select("*")
+        .eq("follower_id", user_id)
+        .eq("following_id", userID);
 
       if (error) {
         throw error;
@@ -77,30 +77,32 @@ const Page = () => {
 
       return isFollowing;
     } catch (error) {
-      console.error('Error checking follow status:', error);
+      console.error("Error checking follow status:", error);
       return false;
     }
   };
 
   const handleFollow = () => {
     if (session && session.user && recipe) {
-      followUser.mutate({
-        follower_id: user_id,
-        following_id: recipe.userID,
-        followed: followed, 
-      }, {
-        onSuccess: () => {
-          setFollowed(!followed);
+      followUser.mutate(
+        {
+          follower_id: user_id,
+          following_id: recipe.userID,
+          followed: followed,
         },
-        onError: (error) => {
-          console.error('Error during follow/unfollow action:', error);
+        {
+          onSuccess: () => {
+            setFollowed(!followed);
+          },
+          onError: (error) => {
+            console.error("Error during follow/unfollow action:", error);
+          },
         }
-      });
+      );
     } else {
-      console.log('Session or recipe is undefined');
+      console.log("Session or recipe is undefined");
     }
   };
-
 
   const handleLike = () => {
     if (session && session.user && recipe) {
@@ -211,27 +213,14 @@ const Page = () => {
             <TouchableOpacity onPress={handleLike}>
               <Ionicons
                 name={recipe.likedByCurrentUser ? "heart" : "heart-outline"}
-                size={30}
+                size={36}
                 color={recipe.likedByCurrentUser ? "red" : "#000"}
                 style={{ marginTop: 5, textAlign: "center" }}
               />
               <Text
-                style={{ fontFamily: "mon", fontSize: 14, textAlign: "center" }}
+                style={{ fontFamily: "mon", fontSize: 18, textAlign: "center" }}
               >
                 {recipe.likes}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Ionicons
-                name="chatbubble-outline"
-                size={30}
-                color={"#000"}
-                style={{ marginTop: 25, textAlign: "center" }}
-              ></Ionicons>
-              <Text
-                style={{ fontFamily: "mon", fontSize: 14, textAlign: "center" }}
-              >
-                140
               </Text>
             </TouchableOpacity>
           </View>
@@ -272,34 +261,41 @@ const Page = () => {
             )}
           </TouchableOpacity>
 
-            <View style={styles.chef}>
-              <Text
-                style={{
-                  fontFamily: "mon-sb",
-                  fontSize: 16,
-                  textAlignVertical: "center",
-                  padding: 10,
-                  paddingTop: 20,
-                  width: "auto",
-                }}
+          <View style={styles.chef}>
+            <Text
+              style={{
+                fontFamily: "mon-sb",
+                fontSize: 16,
+                textAlignVertical: "center",
+                padding: 10,
+                paddingTop: 20,
+                width: "auto",
+              }}
+            >
+              {recipe.full_name}
+            </Text>
+            {user_id !== recipe.userID && ( // Only show if current user is not the recipe creator
+              <TouchableOpacity
+                style={styles.btnOutline}
+                onPress={handleFollow}
               >
-                {recipe.full_name}
-              </Text>
-              {user_id !== recipe.userID && ( // Only show if current user is not the recipe creator
-
-              <TouchableOpacity style={styles.btnOutline} onPress={handleFollow}>
                 <Ionicons
                   name={followed ? "checkmark" : "add"}
                   size={16}
                   style={{ color: Colors.primary }}
                 />
-                <Text style={{ fontFamily: "mon", fontSize: 16, color: Colors.primary }}>
+                <Text
+                  style={{
+                    fontFamily: "mon",
+                    fontSize: 16,
+                    color: Colors.primary,
+                  }}
+                >
                   {followed ? "Following" : "Follow"}
                 </Text>
               </TouchableOpacity>
-                        )}
-
-            </View>
+            )}
+          </View>
           <View style={styles.infoContainer}>
             <Ionicons
               name="time-outline"

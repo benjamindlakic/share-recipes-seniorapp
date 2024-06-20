@@ -325,3 +325,113 @@ export const useSearchRecipes = (
     },
   });
 };
+export const useTopProfiles = (user_id: String) => {
+  return useQuery({
+    queryKey: ["topProfiles", user_id],
+    queryFn: async () => {
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, full_name, followers")
+        .order("followers", { ascending: false })
+        .limit(6);
+
+      if (profilesError) {
+        throw new Error(profilesError.message);
+      }
+
+      const profileIds = profiles.map(profile => profile.id);
+
+      const { data: follows, error: followsError } = await supabase
+        .from("follows")
+        .select("following_id, follower_id")
+        .in("following_id", profileIds)
+        .eq("follower_id", user_id);
+
+      if (followsError) {
+        throw new Error(followsError.message);
+      }
+
+      return { profiles, follows };
+    },
+  });
+};
+
+export const useTopLikedRecipes = () => {
+  return useQuery({
+    queryKey: ["topLikedRecipes"],
+    queryFn: async () => {
+      const { data: recipes, error: recipesError } = await supabase
+        .from("recipes")
+        .select("*")
+        .order("likes", { ascending: false })
+        .limit(6);
+
+      if (recipesError) {
+        throw new Error(recipesError.message);
+      }
+
+      const userIds = [...new Set(recipes.map((recipe) => recipe.userID))];
+
+      const { data: users, error: usersError } = await supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", userIds);
+
+      if (usersError) {
+        throw new Error(usersError.message);
+      }
+
+      const userMap: Record<string, string> = users.reduce((acc, user) => {
+        acc[user.id] = user.full_name;
+        return acc;
+      }, {} as Record<string, string>);
+
+      const recipesWithUserNames = recipes.map((recipe) => ({
+        ...recipe,
+        full_name: userMap[recipe.userID],
+      }));
+
+      return recipesWithUserNames;
+    },
+  });
+};
+
+export const useLowestCalorieRecipes = () => {
+  return useQuery({
+    queryKey: ["lowestCalorieRecipes"],
+    queryFn: async () => {
+      const { data: recipes, error: recipesError } = await supabase
+        .from("recipes")
+        .select("*")
+        .order("calories", { ascending: true })
+        .limit(6);
+
+      if (recipesError) {
+        throw new Error(recipesError.message);
+      }
+
+      const userIds = [...new Set(recipes.map((recipe) => recipe.userID))];
+
+      const { data: users, error: usersError } = await supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", userIds);
+
+      if (usersError) {
+        throw new Error(usersError.message);
+      }
+
+      const userMap: Record<string, string> = users.reduce((acc, user) => {
+        acc[user.id] = user.full_name;
+        return acc;
+      }, {} as Record<string, string>);
+
+      const recipesWithUserNames = recipes.map((recipe) => ({
+        ...recipe,
+        full_name: userMap[recipe.userID],
+      }));
+
+      return recipesWithUserNames;
+    },
+  });
+};

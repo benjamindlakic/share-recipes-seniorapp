@@ -28,9 +28,7 @@ const profile = () => {
       />
 
       <Image
-        source={{
-          uri: "https://avatar.iran.liara.run/public/boy?username=Ash",
-        }}
+       source={{ uri: `https://avatar.iran.liara.run/public/boy?username=${profile.full_name}` }}
         style={styles.profileImage}
       />
       <Text style={{ textAlign: "center", fontFamily: "mon-sb", fontSize: 24 }}>

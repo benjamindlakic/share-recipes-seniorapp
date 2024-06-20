@@ -46,15 +46,18 @@ const Recipes = ({ recipes = [] }: Props) => {
             <Text style={{fontFamily: 'mon-sb', fontSize: 14, textAlign: 'center', verticalAlign:'top', textAlignVertical:'top', bottom: 10}}>{item.title}</Text>
 
             <View style={{ justifyContent: "space-evenly", flexDirection: "row", padding: 0, bottom: 3, alignItems:'center'}}>
-            <Ionicons name="time-outline" size={20} color={Colors.dark} />
+            <Ionicons name="time-outline" size={18} color={Colors.dark} />
               <Text style={styles.infoText}>{item.cookingTime} min</Text>
               <Text style={styles.divider}></Text>
               <MaterialCommunityIcons
                 name="pot-steam-outline"
-                size={20}
+                size={18}
                 color="black"
               />
               <Text style={styles.infoText}>{item.difficulty}</Text>
+              <Text style={styles.divider}></Text>
+              <Ionicons name="flame-outline" size={18} color={Colors.dark} />
+              <Text style={styles.infoText}>{item.calories}</Text>
             </View>
           </View>
         </View>
@@ -111,7 +114,7 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     bottom: 5,
     left: 16,
-    padding: 5,
+    padding: 4,
     width: 200,
     elevation: 2,
     shadowColor: "#000",
@@ -123,7 +126,7 @@ const styles = StyleSheet.create({
     },
   },
   infoText: {
-    marginLeft: 5,
+    marginLeft: 3,
     fontFamily: "mon-sb",
     fontSize: 12,
     color: Colors.dark,
