@@ -114,7 +114,6 @@ const Page = () => {
     }
   };
 
-
   const shareRecipe = async () => {
     try {
       await Share.share({
@@ -321,7 +320,7 @@ const Page = () => {
               size={20}
               color={Colors.dark}
             ></Ionicons>
-            <Text style={styles.infoText}>{recipe.calories} 540</Text>
+            <Text style={styles.infoText}>{recipe.calories}</Text>
           </View>
           <View style={styles.stats}>
             <View style={styles.statsIndiv}>

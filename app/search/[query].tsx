@@ -11,15 +11,30 @@ import {
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useSearchRecipes } from "@/api/recipes"; 
 import { Link } from "expo-router";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 
 const Search = () => {
-  const { query } = useLocalSearchParams();
-  const { data: recipes, error, isLoading } = useSearchRecipes(query?.toString() || "");
+  const { query, minCalories, maxCalories, minCookingTime, maxCookingTime, difficulty } = useLocalSearchParams();
+
+
+  const parsedQuery = query ? query.toString() : "";
+  const parsedMinCalories = minCalories !== undefined ? Number(minCalories) : 0;
+  const parsedMaxCalories = maxCalories !== undefined ? Number(maxCalories) : 2000;
+  const parsedMinCookingTime = minCookingTime !== undefined ? Number(minCookingTime) : 0;
+  const parsedMaxCookingTime = maxCookingTime !== undefined ? Number(maxCookingTime) : 180;
+  const parsedDifficulty = difficulty ? difficulty.toString() : "";
+
+  const { data: recipes, error, isLoading } = useSearchRecipes(
+    parsedQuery,
+    parsedMinCalories,
+    parsedMaxCalories,
+    parsedMinCookingTime,
+    parsedMaxCookingTime,
+    parsedDifficulty
+  );
   const recipeRef = useRef<FlatList>(null);
 
   if (isLoading) {

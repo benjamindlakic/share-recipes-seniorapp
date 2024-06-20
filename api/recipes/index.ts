@@ -269,21 +269,40 @@ export const useFollowUser = () => {
   });
 };
 
-export const useSearchRecipes = (query: string) => {
+export const useSearchRecipes = (
+  query: string,
+  minCalories: number,
+  maxCalories: number,
+  minCookingTime: number,
+  maxCookingTime: number,
+  difficulty: string
+) => {
   return useQuery({
-    queryKey: ["searchRecipes", query],
+    queryKey: ["searchRecipes", query, minCalories, maxCalories, minCookingTime, maxCookingTime, difficulty],
     queryFn: async () => {
-      // Fetch recipes that match the search query
-      const { data: recipes, error: recipesError } = await supabase
+      let baseQuery = supabase
         .from("recipes")
         .select("*")
         .ilike("title", `%${query}%`);
+
+      // Apply additional filters
+      if (minCalories !== undefined && maxCalories !== undefined) {
+        baseQuery = baseQuery.gte("calories", minCalories).lte("calories", maxCalories);
+      }
+      if (minCookingTime !== undefined && maxCookingTime !== undefined) {
+        baseQuery = baseQuery.gte("cookingTime", minCookingTime).lte("cookingTime", maxCookingTime);
+      }
+      if (difficulty) {
+        baseQuery = baseQuery.eq("difficulty", difficulty);
+      }
+
+      const { data: recipes, error: recipesError } = await baseQuery;
       if (recipesError) {
         throw new Error(recipesError.message);
       }
-      // Extract unique user IDs
+
+      // Fetch user details
       const userIds = [...new Set(recipes.map((recipe) => recipe.userID))];
-      // Fetch user details for each unique userID
       const { data: users, error: usersError } = await supabase
         .from("profiles")
         .select("id, full_name")
@@ -291,16 +310,17 @@ export const useSearchRecipes = (query: string) => {
       if (usersError) {
         throw new Error(usersError.message);
       }
-      // Create a map of userID to full_name
+
       const userMap: Record<string, string> = users.reduce((acc, user) => {
         acc[user.id] = user.full_name;
         return acc;
       }, {} as Record<string, string>);
-      // Add full_name to each recipe
+
       const recipesWithUserNames = recipes.map((recipe) => ({
         ...recipe,
         full_name: userMap[recipe.userID],
       }));
+
       return recipesWithUserNames;
     },
   });

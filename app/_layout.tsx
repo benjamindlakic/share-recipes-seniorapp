@@ -1,9 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Stack, router, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -122,7 +117,6 @@ function RootLayoutNav() {
             name="search/[query]"
             options={{
               title: `Search`,
-              presentation: "fullScreenModal",
               headerTitleStyle: { fontFamily: "mon-sb" },
               headerLeft: () => (
                 <TouchableOpacity onPress={() => router.back()}>

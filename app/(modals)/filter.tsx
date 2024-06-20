@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, TextInput, Alert } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { defaultStyles } from "@/constants/Styles";
 import Animated, { SlideInDown } from "react-native-reanimated";
 import Colors from "@/constants/Colors";
@@ -9,71 +9,78 @@ import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
-
-const filter = () => {
-  const [caloriesValue, setCaloriesValue] = React.useState([0, 2000]);
-  const [cookingValue, setCookingValue] = React.useState([0, 180]);
-  const [selectedDifficulty, setSelectedDifficulty] = useState();
+const Filter = () => {
+  const [caloriesValue, setCaloriesValue] = useState([0, 2000]);
+  const [cookingValue, setCookingValue] = useState([0, 180]);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string | undefined>();
 
   const pathname = usePathname();
   const [query, setQuery] = useState("");
 
+  const caloriesValuesChange = (values: number[]) => setCaloriesValue(values);
+  const cookingValuesChange = (values: number[]) => setCookingValue(values);
 
-  const caloriesValuesChange = (
-    values: React.SetStateAction<number[]>
-  ) => setCaloriesValue(values);
-
-  const cookingValuesChange = (
-    values: React.SetStateAction<number[]>
-  ) => setCookingValue(values);
+  const handleShowResults = () => {
+    if (!query) {
+      return Alert.alert("Please enter a search query");
+    }
+  
+    console.log(query, caloriesValue, cookingValue, selectedDifficulty);
+  
+    const params = {
+      minCalories: caloriesValue[0].toString(),
+      maxCalories: caloriesValue[1].toString(),
+      minCookingTime: cookingValue[0].toString(),
+      maxCookingTime: cookingValue[1].toString(),
+      difficulty: selectedDifficulty,
+    };
+  
+    router.push({
+      pathname: query ? `/search/${encodeURIComponent(query)}` : '/search',
+      params,
+    });
+    
+  };
 
   return (
     <View style={{ flex: 1, paddingTop: 100, backgroundColor: "#fff" }}>
       <Stack.Screen
         options={{
-          header: () => <SafeAreaView style={{ flex: 1 }}>
-          <View style={styles.container}>
-            <View style={styles.actionRow}>
-              <Ionicons
-                name="chevron-back"
-                size={24}
-                color={Colors.primary}
-                onPress={router.back}
-              />
-              <TouchableOpacity style={styles.searchBtn}>
-                <Ionicons name="search" size={24} color={Colors.primary}></Ionicons>
-                <View>
-                  <TextInput
-                    style={{ fontFamily: "mon-sb", fontSize: 16 }}
-                    placeholder="Try 'chicken', 'avocado'"
-                    value={query}
-                    onChangeText={(e) => setQuery(e)}
-                  ></TextInput>
+          header: () => (
+            <SafeAreaView style={{ flex: 1 }}>
+              <View style={styles.container}>
+                <View style={styles.actionRow}>
+                  <Ionicons
+                    name="chevron-back"
+                    size={24}
+                    color={Colors.primary}
+                    onPress={router.back}
+                  />
+                  <TouchableOpacity style={styles.searchBtn}>
+                    <Ionicons name="search" size={24} color={Colors.primary}></Ionicons>
+                    <View>
+                      <TextInput
+                        style={{ fontFamily: "mon-sb", fontSize: 16 }}
+                        placeholder="Try 'chicken', 'avocado'"
+                        value={query}
+                        onChangeText={(e) => setQuery(e)}
+                      ></TextInput>
+                    </View>
+                  </TouchableOpacity>
+                  <Ionicons
+                    name="close-circle-outline"
+                    size={24}
+                    color={Colors.primary}
+                    onPress={() => setQuery("")} // Clear text in TextInput
+                  ></Ionicons>
                 </View>
-              </TouchableOpacity>
-              <Ionicons
-                name="close-circle-outline"
-                size={24}
-                color={Colors.primary}
-                onPress={() => setQuery("")} // Clear text in TextInput
-
-              ></Ionicons>
-            </View>
-          </View>
-        </SafeAreaView>,
+              </View>
+            </SafeAreaView>
+          ),
         }}
       />
-      <Text
-        style={{
-          marginTop: 20,
-          padding: 15,
-          fontFamily: "mon-sb",
-          fontSize: 18,
-        }}
-      >
-        Calories
-      </Text>
-      <View style={{ justifyContent: "center", alignItems: "center" }}>
+      <Text style={styles.sectionTitle}>Calories</Text>
+      <View style={styles.sliderContainer}>
         <MultiSlider
           values={[caloriesValue[0], caloriesValue[1]]}
           onValuesChange={caloriesValuesChange}
@@ -83,39 +90,26 @@ const filter = () => {
           step={1}
           allowOverlap={false}
           snapped={true}
-          markerStyle={{
-            backgroundColor: Colors.primary,
-            height: 20,
-            width: 20,
-          }}
-          selectedStyle={{ backgroundColor: Colors.primary }}
-          unselectedStyle={{ backgroundColor: Colors.grey }}
+          markerStyle={styles.markerStyle}
+          selectedStyle={styles.selectedStyle}
+          unselectedStyle={styles.unselectedStyle}
           minMarkerOverlapDistance={40}
           isMarkersSeparated={true}
         />
         <View style={styles.buttonsContainer}>
           <View style={styles.btnOutline}>
-            <Text style={{fontFamily: 'mon', fontSize: 10, padding: 2}}>min</Text>
+            <Text style={styles.minMaxText}>min</Text>
             <Text style={styles.btnOutlineText}>{caloriesValue[0]}</Text>
           </View>
           <Text style={styles.btnOutlineText}>-</Text>
           <View style={styles.btnOutline}>
-            <Text style={{fontFamily: 'mon', fontSize: 10, padding: 2}}>max</Text>
+            <Text style={styles.minMaxText}>max</Text>
             <Text style={styles.btnOutlineText}>{caloriesValue[1]}</Text>
           </View>
         </View>
       </View>
-      <Text
-        style={{
-          marginTop: 20,
-          padding: 15,
-          fontFamily: "mon-sb",
-          fontSize: 18,
-        }}
-      >
-        Cooking time
-      </Text>
-      <View style={{ justifyContent: "center", alignItems: "center" }}>
+      <Text style={styles.sectionTitle}>Cooking time</Text>
+      <View style={styles.sliderContainer}>
         <MultiSlider
           values={[cookingValue[0], cookingValue[1]]}
           onValuesChange={cookingValuesChange}
@@ -125,79 +119,48 @@ const filter = () => {
           step={1}
           allowOverlap={false}
           snapped={true}
-          markerStyle={{
-            backgroundColor: Colors.primary,
-            height: 20,
-            width: 20,
-          }}
-          selectedStyle={{ backgroundColor: Colors.primary }}
-          unselectedStyle={{ backgroundColor: Colors.grey }}
+          markerStyle={styles.markerStyle}
+          selectedStyle={styles.selectedStyle}
+          unselectedStyle={styles.unselectedStyle}
           minMarkerOverlapDistance={40}
           isMarkersSeparated={true}
         />
         <View style={styles.buttonsContainer}>
           <View style={styles.btnOutline}>
-            <Text style={{fontFamily: 'mon', fontSize: 10, padding: 2}}>min</Text>
+            <Text style={styles.minMaxText}>min</Text>
             <Text style={styles.btnOutlineText}>{cookingValue[0]}</Text>
           </View>
           <Text style={styles.btnOutlineText}>-</Text>
           <View style={styles.btnOutline}>
-            <Text style={{fontFamily: 'mon', fontSize: 10, padding: 2}}>max</Text>
+            <Text style={styles.minMaxText}>max</Text>
             <Text style={styles.btnOutlineText}>{cookingValue[1]}</Text>
           </View>
         </View>
       </View>
-      <Text
-        style={{
-          marginTop: 20,
-          padding: 15,
-          fontFamily: "mon-sb",
-          fontSize: 18,
-        }}
-      >
-        Difficulty
-      </Text>
-          <View style={{bottom:50}}>
-            <Picker
-              style={{flex:1}}
-              mode="dropdown"
-              dropdownIconColor={Colors.primary}
-              selectedValue={selectedDifficulty}
-              onValueChange={(itemValue, itemIndex) =>
-                setSelectedDifficulty(itemValue)
-              }
-            >
-              <Picker.Item label="Easy" value="easy" />
-              <Picker.Item label="Medium" value="medium" />
-              <Picker.Item label="Hard" value="hard" />
-            </Picker>
-          </View>
-      <Animated.View
-        style={[defaultStyles.footer, { backgroundColor: "transparent" }]}
-        entering={SlideInDown.delay(200)}
-      >
-        <TouchableOpacity style={styles.btnGo} 
-        onPress={() => {
-          if(!query){
-            return Alert.alert("Please enter a search query")
-          }
-
-          if(pathname.startsWith("/search")){
-            router.setParams({query})
-          }else{
-            router.push(`/search/${query}`);
-          }
-        }}>
-          <Text style={{ fontFamily: "mon-sb", fontSize: 16, color: "#fff" }}>
-            Show results
-          </Text>
+      <Text style={styles.sectionTitle}>Difficulty</Text>
+      <View style={styles.pickerContainer}>
+        <Picker
+          style={{ flex: 1 }}
+          mode="dropdown"
+          dropdownIconColor={Colors.primary}
+          selectedValue={selectedDifficulty}
+          onValueChange={(itemValue) => setSelectedDifficulty(itemValue)}
+        >
+          <Picker.Item label="Easy" value="Easy" />
+          <Picker.Item label="Medium" value="Medium" />
+          <Picker.Item label="Hard" value="Hard" />
+        </Picker>
+      </View>
+      <Animated.View style={[defaultStyles.footer, { backgroundColor: "transparent" }]} entering={SlideInDown.delay(200)}>
+        <TouchableOpacity style={styles.btnGo} onPress={handleShowResults}>
+          <Text style={{ fontFamily: "mon-sb", fontSize: 16, color: "#fff" }}>Show results</Text>
         </TouchableOpacity>
       </Animated.View>
     </View>
   );
 };
 
-export default filter;
+export default Filter;
 
 const styles = StyleSheet.create({
   btnGo: {
@@ -216,7 +179,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   btnOutline: {
-    backgroundColor: "#transparent",
+    backgroundColor: "transparent",
     borderRadius: 32,
     borderWidth: StyleSheet.hairlineWidth,
     height: 30,
@@ -225,13 +188,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     paddingHorizontal: 10,
-    gap: 5
+    gap: 5,
   },
   btnOutlineText: {
     color: "#000",
     fontSize: 16,
     fontFamily: "mon",
     fontWeight: "bold",
+  },
+  minMaxText: {
+    fontFamily: 'mon',
+    fontSize: 10,
+    padding: 2,
   },
   container: {
     backgroundColor: "#fff",
@@ -267,5 +235,29 @@ const styles = StyleSheet.create({
       width: 1,
       height: 1,
     },
+  },
+  sectionTitle: {
+    marginTop: 20,
+    padding: 15,
+    fontFamily: "mon-sb",
+    fontSize: 18,
+  },
+  sliderContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  markerStyle: {
+    backgroundColor: Colors.primary,
+    height: 20,
+    width: 20,
+  },
+  selectedStyle: {
+    backgroundColor: Colors.primary,
+  },
+  unselectedStyle: {
+    backgroundColor: Colors.grey,
+  },
+  pickerContainer: {
+    bottom: 50,
   },
 });
