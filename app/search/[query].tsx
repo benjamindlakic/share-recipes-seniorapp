@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useSearchRecipes } from "@/api/recipes"; 
 import { Link } from "expo-router";
 import Colors from "@/constants/Colors";
@@ -70,6 +70,9 @@ const Search = () => {
           <View style={styles.infoContainer}>
             <Ionicons name="time-outline" size={18} color={Colors.dark} />
             <Text style={styles.infoText}>{item.cookingTime} min</Text>
+            <Text style={styles.divider}></Text>
+            <MaterialCommunityIcons name="pot-steam-outline" size={18} color="black" />
+            <Text style={styles.infoText}>{item.difficulty}</Text>
             <Text style={styles.divider}></Text>
             <Ionicons name="flame-outline" size={18} color={Colors.dark} />
             <Text style={styles.infoText}>{item.calories}</Text>

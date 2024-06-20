@@ -114,6 +114,30 @@ function RootLayoutNav() {
             }}
           />
           <Stack.Screen
+            name="(modals)/ingredients"
+            options={{
+              title: `Ingredients`,
+              headerTitleStyle: { fontFamily: "mon-sb" },
+              headerLeft: () => (
+                <TouchableOpacity onPress={() => router.back()}>
+                  <Ionicons name='chevron-back' size={28} color={Colors.primary} />
+                </TouchableOpacity>
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="(modals)/instructions"
+            options={{
+              title: `Instructions`,
+              headerTitleStyle: { fontFamily: "mon-sb" },
+              headerLeft: () => (
+                <TouchableOpacity onPress={() => router.back()}>
+                  <Ionicons name='chevron-back' size={28} color={Colors.primary} />
+                </TouchableOpacity>
+              ),
+            }}
+          />
+          <Stack.Screen
             name="search/[query]"
             options={{
               title: `Search`,
