@@ -1,4 +1,14 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+  FlatList,
+  ListRenderItem,
+  ScrollView
+} from "react-native";
 import { useState } from "react";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
@@ -6,21 +16,50 @@ import ProfileHeader from "@/components/ProfileHeader";
 import { Link, Stack, useRouter } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/providers/AuthProvider";
+import { useUserRecipes } from "@/api/recipes";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 const profile = () => {
-  const router = useRouter();
-  const { profile, loading } = useAuth();
+  const { profile } = useAuth();
+  const { data: recipes, error, isLoading } = useUserRecipes();
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
-      </View>
-    );
+  if (isLoading) {
+    return <ActivityIndicator />;
   }
 
+  if (error) {
+    return <Text>Failed to fetch user recipes.</Text>;
+  }
+
+  const renderRecipe: ListRenderItem<any> = ({ item }) => (
+    <Link href={`/listing/${item.id}`} asChild>
+      <TouchableOpacity>
+        <View style={styles.recipes}>
+          <Image source={{ uri: item.image }} style={styles.image} />
+          <View style={styles.recipeNameContainer}>
+            <Text style={styles.recipeName}>{item.title}</Text>
+          </View>
+          <View style={styles.infoContainer}>
+            <Ionicons name="time-outline" size={20} color={Colors.dark} />
+            <Text style={styles.infoText}>{item.cookingTime} min</Text>
+            <Text style={styles.divider}></Text>
+            <MaterialCommunityIcons
+              name="pot-steam-outline"
+              size={20}
+              color="black"
+            />
+            <Text style={styles.infoText}>{item.difficulty}</Text>
+            <Text style={styles.divider}></Text>
+            <Ionicons name="flame-outline" size={20} color={Colors.dark} />
+            <Text style={styles.infoText}>{item.calories}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    </Link>
+  );
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Stack.Screen
         options={{
           header: () => <ProfileHeader />,
@@ -28,7 +67,9 @@ const profile = () => {
       />
 
       <Image
-       source={{ uri: `https://avatar.iran.liara.run/public/boy?username=${profile.full_name}` }}
+        source={{
+          uri: `https://avatar.iran.liara.run/public/boy?username=${profile.full_name}`,
+        }}
         style={styles.profileImage}
       />
       <Text style={{ textAlign: "center", fontFamily: "mon-sb", fontSize: 24 }}>
@@ -57,7 +98,7 @@ const profile = () => {
       </View>
 
       <Text style={styles.bioText}>
-        I am a chef who loves to cook and share my recipes with the world.
+        {profile.bio || "Add a bio to let others know more about you!"}
       </Text>
 
       <View style={styles.buttonsContainer}>
@@ -73,7 +114,16 @@ const profile = () => {
           <Text style={styles.btnOutlineText}>Logout</Text>
         </TouchableOpacity>
       </View>
-    </View>
+      <View style={{ alignItems: "center" }}>
+        <Text style={{ textAlign: "center", fontFamily: "mon", fontSize: 22, marginTop: 10 }}>Created recipes</Text>
+        <View style={styles.underline} />
+      </View>
+      <FlatList
+        data={recipes}
+        renderItem={renderRecipe}
+        keyExtractor={(item) => item.id.toString()}
+      />
+    </ScrollView>
   );
 };
 
@@ -83,7 +133,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    padding: 26,
+    paddingTop: 20
   },
   divider: {
     width: 1,
@@ -150,5 +200,64 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: "center",
     marginTop: 10,
+  },
+  underline: {
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 10,
+    height: 1,
+    width: "20%",
+    backgroundColor: Colors.primary,
+  },
+  recipes: {
+    padding: 16,
+  },
+  image: {
+    width: "100%",
+    height: 300,
+    borderRadius: 10,
+  },
+  recipeNameContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    position: "absolute",
+    bottom: 80,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    borderRadius: 8,
+    left: 30,
+    width: "90%",
+  },
+  recipeName: {
+    fontFamily: "mon-sb",
+    fontSize: 20,
+    color: "#fff",
+    padding: 10,
+  },
+  infoContainer: {
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    position: "absolute",
+    justifyContent: "space-evenly",
+    paddingTop: 15,
+    bottom: 5,
+    left: 16,
+    padding: 5,
+    height: 50,
+    width: "100%",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    shadowOffset: {
+      width: 1,
+      height: 1,
+    },
+  },
+  infoText: {
+    textAlign: "center",
+    fontFamily: "mon-sb",
+    fontSize: 14,
+    color: Colors.dark,
   },
 });

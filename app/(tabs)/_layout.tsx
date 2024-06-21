@@ -6,11 +6,6 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import { useAuth } from "@/providers/AuthProvider";
 
 export const LogoutButton = () => {
-  // const { signOut } = useAuth();
-
-  // const doLogout = () => {
-  //   signOut();
-  // };
 
   return (
     <TouchableOpacity style={styles.logoutBtn}>

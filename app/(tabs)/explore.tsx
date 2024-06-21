@@ -23,7 +23,6 @@ import {
 import { useAuth } from "@/providers/AuthProvider";
 
 const Page = () => {
-  const { data: items, error, isLoading } = useRecipeList();
   const { data: topLikedRecipes } = useTopLikedRecipes();
   const { data: lowestCalorieRecipes } = useLowestCalorieRecipes();
   const { session } = useAuth();

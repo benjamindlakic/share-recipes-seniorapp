@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/providers/AuthProvider";
 
 export const useRecipeList = () => {
   return useQuery({
@@ -433,5 +434,31 @@ export const useLowestCalorieRecipes = () => {
 
       return recipesWithUserNames;
     },
+  });
+};
+
+export const useUserRecipes = () => {
+  const { session } = useAuth();
+
+  return useQuery({
+    queryKey: ["userRecipes", session?.user.id],
+    queryFn: async () => {
+      if (!session) {
+        throw new Error("User is not logged in");
+      }
+
+      const { data: recipes, error } = await supabase
+        .from("recipes")
+        .select("*")
+        .eq("userID", session.user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return recipes;
+    },
+    enabled: !!session,
   });
 };
