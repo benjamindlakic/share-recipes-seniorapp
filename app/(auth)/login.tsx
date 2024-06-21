@@ -56,14 +56,14 @@ const Page = () => {
       <TouchableOpacity style={defaultStyles.btn} disabled={loading} onPress={signInWithEmail}>
         <Text style={defaultStyles.btnText}>Sign In</Text>
       </TouchableOpacity>
-
+{/* 
       <Link href="/(modals)/reset" asChild>
         <Pressable>
           <Text style={[styles.textBtn, { marginTop: 20, marginBottom: 10 }]}>
             Forgot password?
           </Text>
         </Pressable>
-      </Link>
+      </Link> */}
       <Link href="/(auth)/register" asChild>
         <Pressable>
           <Text style={styles.textBtn}>Create Account</Text>

@@ -7,27 +7,65 @@ import {
   ActivityIndicator,
   FlatList,
   ListRenderItem,
-  ScrollView
+  ScrollView,
 } from "react-native";
-import { useState } from "react";
 import Colors from "@/constants/Colors";
-import { defaultStyles } from "@/constants/Styles";
 import ProfileHeader from "@/components/ProfileHeader";
-import { Link, Stack, useRouter } from "expo-router";
+import { Link, Stack, useFocusEffect, useRouter } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/providers/AuthProvider";
 import { useUserRecipes } from "@/api/recipes";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import React from "react";
 
 const profile = () => {
-  const { profile } = useAuth();
-  const { data: recipes, error, isLoading } = useUserRecipes();
+  const { profile, loading: profileLoading, setSession } = useAuth();
+  const {
+    data: recipes,
+    error: recipesError,
+    isLoading: recipesLoading,
+    refetch: refetchRecipes,
+  } = useUserRecipes();
 
-  if (isLoading) {
+  const fetchData = async () => {
+    try {
+      // Fetch user recipes data
+      await refetchRecipes();
+  
+      // Check if profile and session are defined
+      if (profile && profile.session && profile.session.user) {
+        const { data: profileData, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', profile.session.user.id)
+          .single();
+  
+        if (error) {
+          throw new Error(error.message);
+        }
+  
+        // Update session with profile data
+        setSession({
+          ...profile.session,
+          profile: profileData,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching profile and recipes:', error);
+    }
+  };
+  // Use useFocusEffect to refresh data on screen focus
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData(); // Call fetchData when screen gains focus
+    }, [])
+  );
+
+  if (profileLoading || recipesLoading) {
     return <ActivityIndicator />;
   }
 
-  if (error) {
+  if (recipesError) {
     return <Text>Failed to fetch user recipes.</Text>;
   }
 
@@ -115,7 +153,16 @@ const profile = () => {
         </TouchableOpacity>
       </View>
       <View style={{ alignItems: "center", marginTop: 10 }}>
-        <Text style={{ textAlign: "center", fontFamily: "mon", fontSize: 22, marginTop: 10 }}>Created recipes</Text>
+        <Text
+          style={{
+            textAlign: "center",
+            fontFamily: "mon",
+            fontSize: 22,
+            marginTop: 10,
+          }}
+        >
+          Created recipes
+        </Text>
         <View style={styles.underline} />
       </View>
       <FlatList
@@ -133,7 +180,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 20
+    paddingTop: 20,
   },
   divider: {
     width: 1,
@@ -195,7 +242,7 @@ const styles = StyleSheet.create({
     fontFamily: "mon",
   },
   btnOutlineTextLogout: {
-    color: 'red',
+    color: "red",
     fontSize: 16,
     fontFamily: "mon",
   },

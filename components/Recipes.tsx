@@ -29,6 +29,10 @@ const Recipes = () => {
     return <Text>Failed to fetch recipes.</Text>;
   }
 
+  if (!recipes || recipes.length === 0) {
+    return <Text style={{alignItems: 'center', fontFamily: 'mon-sb', fontSize: 24, justifyContent: 'center', padding: 20}}>Go to Explore, follow some users and come back</Text>;
+  }
+
   const renderRow: ListRenderItem<any> = ({ item }) => (
     <Link href={`/listing/${item.id}`} asChild>
       <TouchableOpacity>
@@ -69,6 +73,7 @@ export default Recipes;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
   },
   recipes: {
     padding: 16,

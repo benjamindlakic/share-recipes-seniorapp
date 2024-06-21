@@ -3,13 +3,36 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/providers/AuthProvider";
 
 export const useRecipeList = () => {
+  const { session } = useAuth();
+
   return useQuery({
     queryKey: ["recipes"],
     queryFn: async () => {
-      // Fetch recipes ordered by creation date (most recent first)
+      if (!session) {
+        throw new Error("User is not logged in");
+      }
+
+      // Fetch the list of users the current user is following
+      const { data: following, error: followingError } = await supabase
+        .from("follows")
+        .select("following_id")
+        .eq("follower_id", session.user.id);
+
+      if (followingError) {
+        throw new Error(followingError.message);
+      }
+
+      const followingIds = following.map(f => f.following_id);
+
+      if (followingIds.length === 0) {
+        return [];
+      }
+
+      // Fetch recipes from users that the current user is following
       const { data: recipes, error: recipesError } = await supabase
         .from("recipes")
         .select("*")
+        .in("userID", followingIds)
         .order("created_at", { ascending: false });
 
       if (recipesError) {
@@ -43,6 +66,7 @@ export const useRecipeList = () => {
 
       return recipesWithUserNames;
     },
+    enabled: !!session,
   });
 };
 
