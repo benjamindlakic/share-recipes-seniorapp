@@ -111,10 +111,10 @@ const profile = () => {
           style={styles.btnOutline}
           onPress={() => supabase.auth.signOut()}
         >
-          <Text style={styles.btnOutlineText}>Logout</Text>
+          <Text style={styles.btnOutlineTextLogout}>Logout</Text>
         </TouchableOpacity>
       </View>
-      <View style={{ alignItems: "center" }}>
+      <View style={{ alignItems: "center", marginTop: 10 }}>
         <Text style={{ textAlign: "center", fontFamily: "mon", fontSize: 22, marginTop: 10 }}>Created recipes</Text>
         <View style={styles.underline} />
       </View>
@@ -190,7 +190,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   btnOutlineText: {
-    color: "#000",
+    color: Colors.primary,
+    fontSize: 16,
+    fontFamily: "mon",
+  },
+  btnOutlineTextLogout: {
+    color: 'red',
     fontSize: 16,
     fontFamily: "mon",
   },
