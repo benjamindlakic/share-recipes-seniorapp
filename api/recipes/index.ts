@@ -190,6 +190,10 @@ export const useInsertRecipe = () => {
           instructions: data.instructions,
           difficulty: data.difficulty,
           cookingTime: data.cookingTime,
+          calories: data.calories,
+          fats: data.fats,
+          proteins: data.proteins,
+          carbs: data.carbs,
         })
         .single();
       if (error) {

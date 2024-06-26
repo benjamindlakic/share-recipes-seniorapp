@@ -25,7 +25,6 @@ const Filter = () => {
       return Alert.alert("Please enter a search query");
     }
   
-    console.log(query, caloriesValue, cookingValue, selectedDifficulty);
   
     const params = {
       minCalories: caloriesValue[0].toString(),

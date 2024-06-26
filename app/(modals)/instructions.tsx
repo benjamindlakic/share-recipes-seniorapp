@@ -4,6 +4,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useRecipe } from "@/api/recipes";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "@/providers/AuthProvider";
 
 const Instructions = () => {
   const { id: idString } = useLocalSearchParams();
@@ -11,8 +12,9 @@ const Instructions = () => {
     ? parseFloat(Array.isArray(idString) ? idString[0] : idString)
     : NaN;
 
-  const { data: recipe, error, isLoading } = useRecipe(id);
-  console.log(recipe);
+  const { session } = useAuth();
+  const user_id = session?.user?.id ?? "";
+  const { data: recipe, error, isLoading } = useRecipe(id, user_id);
 
   if (isLoading) {
     return (

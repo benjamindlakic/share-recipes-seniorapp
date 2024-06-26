@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   FlatList,
   ListRenderItem,
-  ScrollView,
 } from "react-native";
 import Colors from "@/constants/Colors";
 import ProfileHeader from "@/components/ProfileHeader";
@@ -17,6 +16,8 @@ import { useAuth } from "@/providers/AuthProvider";
 import { useUserRecipes } from "@/api/recipes";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
+import { ScrollView } from 'react-native-virtualized-view'
+
 
 const profile = () => {
   const { profile, loading: profileLoading, setSession } = useAuth();

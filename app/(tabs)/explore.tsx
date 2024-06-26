@@ -16,11 +16,11 @@ import Colors from "@/constants/Colors";
 import {
   useFollowUser,
   useLowestCalorieRecipes,
-  useRecipeList,
   useTopLikedRecipes,
   useTopProfiles,
 } from "@/api/recipes";
 import { useAuth } from "@/providers/AuthProvider";
+
 
 const Page = () => {
   const { data: topLikedRecipes } = useTopLikedRecipes();
@@ -30,6 +30,7 @@ const Page = () => {
   const { data, refetch: refetchTopProfiles } = useTopProfiles(user_id);
   const { profiles, follows } = data || {};
   const followUser = useFollowUser();
+  
 
   const handleFollow = (
     following_id: any,
@@ -73,10 +74,7 @@ const Page = () => {
                 style={{ position: "absolute", right: 15 }}
               />
             </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <Recipes recipes={topLikedRecipes} />
-            </ScrollView>
-
+            <Recipes recipes={topLikedRecipes} />
             <View style={{ flexDirection: "row", marginTop: 20 }}>
               <Text
                 style={{
@@ -180,9 +178,7 @@ const Page = () => {
                 style={{ position: "absolute", right: 15 }}
               />
             </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <Recipes recipes={lowestCalorieRecipes} />
-            </ScrollView>
+            <Recipes recipes={lowestCalorieRecipes} />
           </View>
         </View>
       </Animated.ScrollView>

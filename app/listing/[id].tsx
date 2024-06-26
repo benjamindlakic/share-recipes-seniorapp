@@ -328,7 +328,7 @@ const Page = () => {
               </Text>
             </View>
             <View style={styles.statsIndiv}>
-              <Text style={styles.statsText}>{recipe.carbos}</Text>
+              <Text style={styles.statsText}>{recipe.carbs}</Text>
               <Text
                 style={{ textAlign: "center", fontFamily: "mon", fontSize: 14 }}
               >
