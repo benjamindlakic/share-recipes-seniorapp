@@ -15,59 +15,32 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/providers/AuthProvider";
 import { useUserRecipes } from "@/api/recipes";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import React from "react";
+import React, { useCallback } from "react";
 import { ScrollView } from 'react-native-virtualized-view'
 
 
 const profile = () => {
-  const { profile, loading: profileLoading, setSession } = useAuth();
+  const { profile, loading: profileLoading, refetchProfile } = useAuth();
   const {
-    data: recipes,
-    error: recipesError,
-    isLoading: recipesLoading,
-    refetch: refetchRecipes,
+      data: recipes,
+      error: recipesError,
+      isLoading: recipesLoading,
+      refetch: refetchRecipes,
   } = useUserRecipes();
 
-  const fetchData = async () => {
-    try {
-      // Fetch user recipes data
-      await refetchRecipes();
-  
-      // Check if profile and session are defined
-      if (profile && profile.session && profile.session.user) {
-        const { data: profileData, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', profile.session.user.id)
-          .single();
-  
-        if (error) {
-          throw new Error(error.message);
-        }
-  
-        // Update session with profile data
-        setSession({
-          ...profile.session,
-          profile: profileData,
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching profile and recipes:', error);
-    }
-  };
-  // Use useFocusEffect to refresh data on screen focus
   useFocusEffect(
-    React.useCallback(() => {
-      fetchData(); // Call fetchData when screen gains focus
-    }, [])
+      useCallback(() => {
+          refetchProfile();
+          refetchRecipes();
+      }, [])
   );
 
   if (profileLoading || recipesLoading) {
-    return <ActivityIndicator />;
+      return <ActivityIndicator />;
   }
 
   if (recipesError) {
-    return <Text>Failed to fetch user recipes.</Text>;
+      return <Text>Failed to fetch user recipes.</Text>;
   }
 
   const renderRecipe: ListRenderItem<any> = ({ item }) => (
@@ -198,6 +171,7 @@ const styles = StyleSheet.create({
   },
   bioText: {
     marginTop: 15,
+    paddingHorizontal: 10,
     fontSize: 18,
     lineHeight: 22,
     color: Colors.grey,

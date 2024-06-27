@@ -1,14 +1,21 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
-import recipesData from '@/assets/data/recipes.json';
 import Recipes from '@/components/Recipes';
 import HomeHeader from '@/components/HomeHeader';
-import { Redirect, Stack } from 'expo-router';
+import { Redirect, Stack, useFocusEffect } from 'expo-router';
 import { useAuth } from '@/providers/AuthProvider';
-
+import { useRecipeList } from '@/api/recipes';
 
 const Page = () => {
     const { session, loading } = useAuth();
+
+    const { refetch } = useRecipeList();
+
+    useFocusEffect(
+        useCallback(() => {
+            refetch();
+        }, [])
+    );
 
     if(loading){
         return <ActivityIndicator size="large" color="#0000ff" />;

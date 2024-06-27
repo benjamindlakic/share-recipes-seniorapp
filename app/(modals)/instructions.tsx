@@ -5,6 +5,7 @@ import { useRecipe } from "@/api/recipes";
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@/providers/AuthProvider";
+import { ScrollView } from "react-native-virtualized-view";
 
 const Instructions = () => {
   const { id: idString } = useLocalSearchParams();
@@ -51,7 +52,7 @@ const Instructions = () => {
       : [];
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Instructions</Text>
       <View style={styles.ingredientsContainer}>
         {instructions.length > 0 ? (
@@ -69,7 +70,7 @@ const Instructions = () => {
           <Text style={styles.errorText}>No instrcutions found.</Text>
         )}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -89,8 +90,10 @@ const styles = StyleSheet.create({
   ingredientsContainer: {
     flexDirection: "column",
     backgroundColor: "#fff",
+    marginBottom: 50,
     borderRadius: 20,
     padding: 10,
+    paddingHorizontal: 20,
     borderWidth: 1,
     borderColor: Colors.primary,
   },

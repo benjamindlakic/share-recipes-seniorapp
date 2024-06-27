@@ -6,56 +6,67 @@ type AuthData = {
     session: Session | null;
     profile: any;
     loading: boolean;
-    setSession: (session: Session | null) => void; // Add setSession to AuthData type
+    setSession: (session: Session | null) => void;
+    refetchProfile: () => void;
 };
 
 const AuthContext = createContext<AuthData>({
     session: null,
     profile: null,
     loading: true,
-    setSession: () => {}, // Default implementation for setSession
+    setSession: () => {},
+    refetchProfile: () => {},
 });
 
 export default function AuthProvider({ children }: PropsWithChildren) {
     const [session, setSession] = useState<Session | null>(null);
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
-  
-    useEffect(() => {
-      const fetchSession = async () => {
-        const { data: { session } } = await supabase.auth.getSession();
-        setSession(session);
-        setLoading(false);
-  
-        if (session) {
-          // Fetch profile and recipe count
-          const [{ data: profileData }, { data: recipeCountData, error: recipeCountError }] = await Promise.all([
+
+    const fetchProfile = async (session: Session) => {
+        const [{ data: profileData }, { data: recipeCountData, error: recipeCountError }] = await Promise.all([
             supabase.from('profiles').select('*').eq('id', session.user.id).single(),
             supabase.from('recipes').select('id', { count: 'exact' }).eq('userID', session.user.id)
-          ]);
-  
-          if (recipeCountError) {
+        ]);
+
+        if (recipeCountError) {
             console.error('Error fetching recipe count:', recipeCountError);
-          }
-  
-          setProfile({
+        }
+
+        setProfile({
             ...profileData,
             recipeCount: recipeCountData?.length || 0
-          });
+        });
+    };
+
+    const refetchProfile = async () => {
+        if (session) {
+            await fetchProfile(session);
         }
-      };
-  
-      fetchSession();
-      supabase.auth.onAuthStateChange((_event, session) => {
-        setSession(session);
-      });
+    };
+
+    useEffect(() => {
+        const fetchSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            setSession(session);
+            setLoading(false);
+
+            if (session) {
+                await fetchProfile(session);
+            }
+        };
+
+        fetchSession();
+        supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session);
+        });
     }, []);
-  
+
     return (
-      <AuthContext.Provider value={{ session, profile, loading, setSession }}>
-        {children}
-      </AuthContext.Provider>
+        <AuthContext.Provider value={{ session, profile, loading, setSession, refetchProfile }}>
+            {children}
+        </AuthContext.Provider>
     );
-  }
-  
-  export const useAuth = () => useContext(AuthContext);
+}
+
+export const useAuth = () => useContext(AuthContext);

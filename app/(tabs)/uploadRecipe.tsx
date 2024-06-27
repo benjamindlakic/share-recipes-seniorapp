@@ -42,6 +42,10 @@ const UploadRecipe = () => {
     setInstructions([""]);
     setPreparationTime("");
     setImageUri(null);
+    setProteins("");
+    setCarbs("");
+    setFats("");
+    setCalories("");
   };
 
   const validateForm = () => {

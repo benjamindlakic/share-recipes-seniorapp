@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useRecipe } from "@/api/recipes";
 import Colors from "@/constants/Colors";
@@ -51,7 +51,7 @@ const Ingredients = () => {
       : [];
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Ingredients</Text>
       <View style={styles.ingredientsContainer}>
         {ingredients.length > 0 ? (
@@ -69,7 +69,7 @@ const Ingredients = () => {
           <Text style={styles.errorText}>No ingredients found.</Text>
         )}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
   ingredientsContainer: {
     flexDirection: "column",
     backgroundColor: "#fff",
+    marginBottom: 30,
     borderRadius: 20,
     padding: 10,
     borderWidth: 1,

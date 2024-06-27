@@ -13,7 +13,7 @@ import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 import { supabase } from "@/lib/supabase";
 
-const register = () => {
+const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [full_name, setFullname] = useState("");
@@ -81,7 +81,7 @@ const register = () => {
   );
 };
 
-export default register;
+export default Register;
 
 const styles = StyleSheet.create({
   container: {

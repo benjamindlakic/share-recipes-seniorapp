@@ -11,23 +11,36 @@ import {
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useSearchRecipes } from "@/api/recipes"; 
+import { useSearchRecipes } from "@/api/recipes";
 import { Link } from "expo-router";
 import Colors from "@/constants/Colors";
 import { defaultStyles } from "@/constants/Styles";
 
 const Search = () => {
-  const { query, minCalories, maxCalories, minCookingTime, maxCookingTime, difficulty } = useLocalSearchParams();
-
+  const {
+    query,
+    minCalories,
+    maxCalories,
+    minCookingTime,
+    maxCookingTime,
+    difficulty,
+  } = useLocalSearchParams();
 
   const parsedQuery = query ? query.toString() : "";
   const parsedMinCalories = minCalories !== undefined ? Number(minCalories) : 0;
-  const parsedMaxCalories = maxCalories !== undefined ? Number(maxCalories) : 2000;
-  const parsedMinCookingTime = minCookingTime !== undefined ? Number(minCookingTime) : 0;
-  const parsedMaxCookingTime = maxCookingTime !== undefined ? Number(maxCookingTime) : 180;
+  const parsedMaxCalories =
+    maxCalories !== undefined ? Number(maxCalories) : 2000;
+  const parsedMinCookingTime =
+    minCookingTime !== undefined ? Number(minCookingTime) : 0;
+  const parsedMaxCookingTime =
+    maxCookingTime !== undefined ? Number(maxCookingTime) : 180;
   const parsedDifficulty = difficulty ? difficulty.toString() : "";
 
-  const { data: recipes, error, isLoading } = useSearchRecipes(
+  const {
+    data: recipes,
+    error,
+    isLoading,
+  } = useSearchRecipes(
     parsedQuery,
     parsedMinCalories,
     parsedMaxCalories,
@@ -40,7 +53,7 @@ const Search = () => {
   if (isLoading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#0000ff" testID="loader" />
       </View>
     );
   }
@@ -71,7 +84,11 @@ const Search = () => {
             <Ionicons name="time-outline" size={18} color={Colors.dark} />
             <Text style={styles.infoText}>{item.cookingTime} min</Text>
             <Text style={styles.divider}></Text>
-            <MaterialCommunityIcons name="pot-steam-outline" size={18} color="black" />
+            <MaterialCommunityIcons
+              name="pot-steam-outline"
+              size={18}
+              color="black"
+            />
             <Text style={styles.infoText}>{item.difficulty}</Text>
             <Text style={styles.divider}></Text>
             <Ionicons name="flame-outline" size={18} color={Colors.dark} />
@@ -94,7 +111,9 @@ const Search = () => {
         data={recipes}
         renderItem={renderRow}
         ref={recipeRef}
-        keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
+        keyExtractor={(item, index) =>
+          item.id ? item.id.toString() : index.toString()
+        }
         numColumns={2}
         contentContainerStyle={styles.listContent}
       />
@@ -128,7 +147,7 @@ const styles = StyleSheet.create({
   },
   rowWrapper: {
     justifyContent: "space-between",
-    paddingHorizontal: 8, 
+    paddingHorizontal: 8,
     marginBottom: 16,
   },
   row: {
@@ -154,7 +173,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 20,
     justifyContent: "space-evenly",
-    alignContent: 'center',
+    alignContent: "center",
     paddingTop: 10,
     bottom: 10,
     height: 35,
